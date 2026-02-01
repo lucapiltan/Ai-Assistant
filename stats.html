@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistik - Täglicher Check</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1 class="welcome">Statistiken — Täglicher Check</h1>
+    <p class="subtitle">Letzte Checks visualisiert (7 / 30 / 60 / 90 Tage)</p>
+    <div style="margin-top:12px;"><a class="button" href="index.html">← Zurück</a></div>
+  </header>
+
+  <main style="max-width:1000px;margin:0 auto;padding:20px 0;">
+    <div class="stats-controls">
+      <button class="tab active" onclick="renderAll()">7 Tage</button>
+      <button class="tab" onclick="renderRange(30)">30 Tage</button>
+      <button class="tab" onclick="renderRange(60)">60 Tage</button>
+      <button class="tab" onclick="renderRange(90)">90 Tage</button>
+    </div>
+
+    <div id="statsContent">
+      <!-- Stats injected here -->
+    </div>
+  </main>
+
+  <script>
+    function loadChecks() {
+      try {
+        return JSON.parse(localStorage.getItem('dailyChecks') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function daysAgo(dateIso, days) {
+      const target = new Date();
+      target.setDate(target.getDate() - days);
+      return new Date(dateIso) >= new Date(target.toDateString());
+    }
+
+    function computeStatsForRange(days) {
+      const checks = loadChecks();
+      if (days === 7) {
+        // last 7 days
+      }
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days + 1);
+      const filtered = checks.filter(c => new Date(c.date) >= cutoff);
+
+      // Average mood (question id 1), energy id 3, stress id 4 (multiple-choice index -> map)
+      const moodVals = filtered.map(c => c.answers[1]).filter(v => v !== undefined);
+      const energyVals = filtered.map(c => c.answers[3]).filter(v => v !== undefined);
+      const stressVals = filtered.map(c => c.answers[4]).filter(v => v !== undefined);
+
+      const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : null;
+      const avgMood = avg(moodVals);
+      const avgEnergy = avg(energyVals);
+      // map stress index (0..4) to numeric 0..4, already is index
+      const avgStress = avg(stressVals);
+
+      return { count: filtered.length, avgMood, avgEnergy, avgStress, items: filtered };
+    }
+
+    function renderStatsBlock(title, value, sub) {
+      return `<div class="stat">
+                <div class="stat-label">${title}</div>
+                <div class="stat-value">${value !== null && value !== undefined ? value : '-'} </div>
+                <div class="stat-sub">${sub || ''}</div>
+              </div>`;
+    }
+
+    function renderRange(days) {
+      document.querySelectorAll('.stats-controls .tab').forEach(b => b.classList.remove('active'));
+      // activate matching button (simple)
+      const btns = document.querySelectorAll('.stats-controls .tab');
+      btns.forEach(b => { if (b.textContent.includes(days)) b.classList.add('active'); });
+
+      const s = computeStatsForRange(days);
+      const content = document.getElementById('statsContent');
+      content.innerHTML = '';
+
+      let html = '<div class="stats-grid">';
+      html += renderStatsBlock('Anzahl Checks', s.count, 'Anzahl gespeicherter Abende');
+      html += renderStatsBlock('Durchschn. Stimmung', s.avgMood ? s.avgMood.toFixed(1) + '/10' : '-', 'Frage: Stimmung');
+      html += renderStatsBlock('Durchschn. Energie', s.avgEnergy ? s.avgEnergy.toFixed(1) + '/10' : '-', 'Frage: Energie');
+      html += renderStatsBlock('Durchschn. Stress (0-4)', s.avgStress !== null ? s.avgStress.toFixed(2) : '-', '0 = entspannt, 4 = sehr gestresst');
+      html += '</div>';
+
+      // list recent entries
+      html += '<h3>Letzte Einträge</h3>';
+      html += '<ul class="check-list">';
+      s.items.slice().reverse().forEach(it => {
+        const d = new Date(it.date);
+        const mood = it.answers[1] || '-';
+        const sleep = (typeof it.answers[2] === 'number') ? it.answers[2] : it.answers[2];
+        html += `<li class="check-item"><div class="check-date">${d.toLocaleString()}</div><div class="check-summary">Stimmung: ${mood}/10</div></li>`;
+      });
+      html += '</ul>';
+
+      content.innerHTML = html;
+    }
+
+    function renderAll() { renderRange(7); }
+
+    // initialize buttons styles
+    document.addEventListener('DOMContentLoaded', () => {
+      // create control container class for easier selection
+      const nodes = document.querySelectorAll('.stats-controls button');
+      nodes.forEach(n => n.classList.add('tab'));
+      document.querySelector('.stats-controls button')?.classList.add('active');
+      renderAll();
+    });
+  </script>
+</body>
+</html>

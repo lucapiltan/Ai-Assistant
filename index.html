@@ -1,219 +1,113 @@
-<!doctype html>
-<html lang="de-CH">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KI Assistent Dashboard</title>
-  <meta name="description" content="Persönliches Dashboard für deinen KI Assistenten" />
-
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <header>
-    <h1 class="welcome">Willkommen zurück, Luca 👋</h1>
-    <p class="subtitle">Übersicht deines persönlichen KI Assistenten</p>
-  </header>
-
-  <main>
-    <!-- Psychische Faktoren -->
-    <section>
-      <h2 class="section-title">🧠 Psychische Faktoren</h2>
-      
-      <div class="grid">
-        <!-- Täglicher Check -->
-        <div class="card">
-          <div class="card-title"><span class="card-icon">✅</span>Täglicher Check-In</div>
-          <div class="metric">
-            <span class="metric-label">Heute durchgeführt</span>
-            <span class="status good">Erledigt</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Stimmung</span>
-            <span class="metric-value">7/10</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Energie</span>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 70%"></div>
-            </div>
-          </div>
-          <button class="button">Check durchführen</button>
-        </div>
-
-        <!-- Stressabbau -->
-        <div class="card">
-          <div class="card-title"><span class="card-icon">😌</span>Stressabbau & Entspannung</div>
-          <div class="metric">
-            <span class="metric-label">Entspannungsminuten heute</span>
-            <span class="metric-value">23 Min</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Wochentrend</span>
-            <span class="status good">Stabil</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Empfohlene Aktivität</span>
-            <span class="metric-value">Meditation</span>
-          </div>
-          <button class="button">Sitzung starten</button>
-        </div>
-
-        <!-- Schlafqualität -->
-        <div class="card">
-          <div class="card-title"><span class="card-icon">😴</span>Schlafqualität & Erholung</div>
-          <div class="metric">
-            <span class="metric-label">Letzte Nacht geschlafen</span>
-            <span class="metric-value">7.5h</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Schlafqualität</span>
-            <span class="status good">Gut</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Empfehlung</span>
-            <span class="metric-value">22:30 - 06:30</span>
-          </div>
-          <button class="button">Details anschauen</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Assistent Features -->
-    <section>
-      <h2 class="section-title">🤖 Assistent Features</h2>
-      
+  
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">💬</div>
-          <div class="feature-name">Chat & Konversation</div>
-          <div class="feature-desc">Sprich mit deinem persönlichen KI Assistenten über alles</div>
-          <button class="button">Öffnen</button>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📚</div>
-          <div class="feature-name">Wissensdatenbank</div>
-          <div class="feature-desc">Zugriff auf dein persönliches Wissensnetzwerk</div>
-          <button class="button">Durchsuchen</button>
-        </div>
-
         <div class="feature-card">
           <div class="feature-icon">📋</div>
           <div class="feature-name">Aufgabenmanagement</div>
           <div class="feature-desc">Organisiere und verwalte deine To-Do Listen</div>
           <button class="button">Verwalten</button>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <div class="feature-name">Analytiken & Insights</div>
-          <div class="feature-desc">Detaillierte Analyse deines Fortschritts</div>
-          <button class="button">Anschauen</button>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <div class="feature-name">Ziele & Meilensteine</div>
-          <div class="feature-desc">Tracke deine persönlichen Ziele</div>
-          <button class="button">Setzen</button>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">⚙️</div>
-          <div class="feature-name">Einstellungen</div>
-          <div class="feature-desc">Personalisiere deinen Assistenten</div>
-          <button class="button">Konfigurieren</button>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🧘</div>
-          <div class="feature-name">Meditationsmodus</div>
-          <div class="feature-desc">Entspannende Meditationen und Atemübungen</div>
-          <button class="button" onclick="openMeditationModal()">Starten</button>
-        </div>
       </div>
     </section>
   </main>
+
+  <!-- Aufgabenmanagement Sektion -->
+  <section class="tasks-section">
+    <h2 class="section-title">🗂 Aufgabenmanagement</h2>
+
+    <div class="tasks-controls">
+      <div class="tabs">
+        <button class="tab active" id="tabTodo" onclick="toggleView('todo')">Todo-Liste</button>
+        <button class="tab" id="tabCalendar" onclick="toggleView('calendar')">Kalender / Plan</button>
+      </div>
+
+      <div class="quick-add">
+        <input id="quickTitle" placeholder="Schnell hinzufügen..." />
+        <select id="quickArea"></select>
+        <select id="quickEnergy">
+          <option value="green">🟢 Grün</option>
+          <option value="yellow">🟡 Gelb</option>
+          <option value="red">🔴 Rot</option>
+        </select>
+        <button class="button" onclick="addTodoQuick()">Hinzufügen</button>
+      </div>
+    </div>
+
+    <div class="tasks-main">
+      <div class="todo-view" id="todoView">
+        <div class="todo-side">
+          <div class="filters">
+            <button class="filter active" data-filter="all" onclick="applyFilter('all')">Alle</button>
+            <button class="filter" data-filter="open" onclick="applyFilter('open')">Offen</button>
+            <button class="filter" data-filter="done" onclick="applyFilter('done')">Erledigt</button>
+          </div>
+
+          <div class="areas-list" id="areasList"></div>
+
+          <div class="backlog">
+            <h3>Backlog</h3>
+            <ul id="backlogList" class="backlog-list"></ul>
+          </div>
+        </div>
+
+        <div class="todo-list-wrap">
+          <h3>Aufgaben</h3>
+          <ul id="todoList" class="todo-list"></ul>
+        </div>
+      </div>
+
+      <div class="calendar-view" id="calendarView" style="display:none;">
+        <div class="calendar-left">
+          <h3>Backlog</h3>
+          <ul id="calendarBacklog" class="backlog-list"></ul>
+        </div>
+        <div class="calendar-right">
+          <div class="calendar-controls">
+            <button class="button" onclick="changeWeek(-1)">←</button>
+            <div id="weekLabel" class="week-label"></div>
+            <button class="button" onclick="changeWeek(1)">→</button>
+          </div>
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Psychische Faktoren -->
+  <section>
+    <h2 class="section-title">🧠 Psychische Faktoren</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">✅</span>Täglicher Check-In</div>
+        <div class="metric">
+          <span class="metric-label">Tageszeit</span>
+          <span class="metric-value">Abends</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Letzter Check</span>
+          <span class="metric-value" id="lastCheck">—</span>
+        </div>
+        <button class="button" onclick="openCheckInModal()">Check durchführen</button>
+      </div>
+
+      <div class="card" id="diaryCard">
+        <div class="card-title"><span class="card-icon">📓</span>Tagebuch</div>
+        <div class="metric">
+          <span class="metric-label">Einträge</span>
+          <span class="metric-value" id="diaryCount">0</span>
+        </div>
+        <div class="metric">
+          <div id="recentDiary" class="recent-diary">Keine Einträge</div>
+        </div>
+        <button class="button" onclick="openDiaryModal()">Eintrag hinzufügen</button>
+      </div>
+    </div>
+  </section>
 
   <footer>
     <small>&copy; <span id="year"></span> Dein persönlicher KI Assistent | Datenschutz & Sicherheit gewährleistet</small>
   </footer>
 
-  <!-- Meditationsmodus Modal -->
-  <div class="modal" id="meditationModal">
-    <div class="modal-content meditation-modal">
-      <div class="modal-header">
-        <h2 class="modal-title">🧘 Meditationsmodus</h2>
-        <button class="modal-close-btn" onclick="closeMeditationModal()">✕</button>
-      </div>
-
-      <div id="meditationContent">
-        <div class="meditation-menu">
-          <div class="meditation-option" onclick="startMeditationType('breathing')">
-            <div class="meditation-icon">🫁</div>
-            <div class="meditation-name">Atemübungen</div>
-            <div class="meditation-duration">5 - 15 Min</div>
-          </div>
-
-          <div class="meditation-option" onclick="startMeditationType('guided')">
-            <div class="meditation-icon">🎧</div>
-            <div class="meditation-name">Geführte Meditation</div>
-            <div class="meditation-duration">10 - 30 Min</div>
-          </div>
-
-          <div class="meditation-option" onclick="startMeditationType('bodyscan')">
-            <div class="meditation-icon">🌊</div>
-            <div class="meditation-name">Body Scan</div>
-            <div class="meditation-duration">15 - 20 Min</div>
-          </div>
-
-          <div class="meditation-option" onclick="startMeditationType('mindfulness')">
-            <div class="meditation-icon">🎯</div>
-            <div class="meditation-name">Achtsamkeit</div>
-            <div class="meditation-duration">10 - 25 Min</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="meditationSession" style="display: none;">
-        <div class="session-header">
-          <button class="back-btn" onclick="backToMenu()">← Zurück</button>
-          <div class="session-title" id="sessionTitle"></div>
-        </div>
-
-        <div class="meditation-timer">
-          <div class="timer-circle">
-            <div class="timer-display">
-              <span id="timerMinutes">05</span>:<span id="timerSeconds">00</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="session-controls">
-          <button class="control-btn" id="startBtn" onclick="startTimer()">Starten</button>
-          <button class="control-btn" id="pauseBtn" onclick="pauseTimer()" style="display: none;">Pausieren</button>
-          <button class="control-btn reset-btn" onclick="resetTimer()">Zurücksetzen</button>
-        </div>
-
-        <div class="session-description" id="sessionDescription"></div>
-
-        <div class="meditation-stats">
-          <div class="stat">
-            <div class="stat-label">Gewählte Dauer</div>
-            <div class="stat-value" id="durationValue">5 Min</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Verbrauchte Zeit</div>
-            <div class="stat-value" id="elapsedValue">0 Min</div>
-          </div>
-        </div>
-
-        <button class="button complete-btn" onclick="completeMeditation()" style="margin-top: 20px; width: 100%;">✓ Beenden</button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Check-In Modal -->
   <div class="modal" id="checkInModal">
@@ -229,8 +123,8 @@
       </div>
 
       <div id="questionContainer">
-        <!-- Questions werden hier eingefügt -->
-      </div>
+          <!-- Questions werden hier eingefügt -->
+        </div>
 
       <div class="modal-buttons">
         <button class="btn-secondary" id="closeBtn" style="display: none;">Abbrechen</button>
@@ -238,171 +132,48 @@
         <button class="btn-primary-modal" id="nextBtn">Weiter →</button>
       </div>
     </div>
-  </div>
+    </div>
 
-  <script>
+    <!-- Diary Modal -->
+    <div class="modal" id="diaryModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Tagebuch Eintrag</h2>
+        </div>
+
+        <div class="diary-form">
+          <label>Datum</label>
+          <input type="date" id="diaryDate" />
+
+          <label>Welche Werte wurden heute gefördert?</label>
+          <input type="text" id="promotedValue" placeholder="Wert (z.B. Nähe)" />
+          <textarea id="promotedNote" placeholder="Beschreibe die Situation"></textarea>
+
+          <label>Welche Werte wurden verletzt?</label>
+          <input type="text" id="violatedValue" placeholder="Wert (z.B. Respekt)" />
+          <textarea id="violatedNote" placeholder="Beschreibe die Situation"></textarea>
+
+          <label>Bist du zufrieden mit deinem Tag?</label>
+          <select id="satisfaction">
+            <option value="yes">Ja</option>
+            <option value="neutral">Neutral</option>
+            <option value="no">Nein</option>
+          </select>
+
+          <label>Freitext</label>
+          <textarea id="diaryNote" placeholder="Weitere Gedanken..."></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="button" onclick="saveDiaryEntry()">Speichern</button>
+            <button class="btn-secondary" onclick="closeDiaryModal()">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
     document.getElementById("year").textContent = new Date().getFullYear();
     
-    // ========== Meditationsmodus ==========
-    const meditationModes = {
-      breathing: {
-        name: 'Atemübungen',
-        description: 'Vertiefte Atemübungen zur Beruhigung und Fokussierung. Atme langsam ein, halte an und atme langsam aus.',
-        durations: [5, 10, 15],
-        defaultDuration: 10
-      },
-      guided: {
-        name: 'Geführte Meditation',
-        description: 'Eine ruhige, geführte Meditation, die dich durch Entspannung und inneren Frieden führt.',
-        durations: [10, 20, 30],
-        defaultDuration: 20
-      },
-      bodyscan: {
-        name: 'Body Scan',
-        description: 'Systematische Körperentspannung. Konzentriere dich auf jeden Körperteil und entspanne ihn bewusst.',
-        durations: [15, 20],
-        defaultDuration: 15
-      },
-      mindfulness: {
-        name: 'Achtsamkeit',
-        description: 'Präsentes Bewusstsein und Achtsamkeit. Beobachte deine Gedanken ohne Urteil.',
-        durations: [10, 15, 25],
-        defaultDuration: 15
-      }
-    };
-
-    let currentMeditationType = null;
-    let meditationDuration = 0;
-    let meditationTimeElapsed = 0;
-    let meditationTimer = null;
-    let isTimerRunning = false;
-
-    function openMeditationModal() {
-      const modal = document.getElementById('meditationModal');
-      modal.classList.add('active');
-      document.getElementById('meditationContent').style.display = 'block';
-      document.getElementById('meditationSession').style.display = 'none';
-    }
-
-    function closeMeditationModal() {
-      const modal = document.getElementById('meditationModal');
-      modal.classList.remove('active');
-      if (meditationTimer) clearInterval(meditationTimer);
-      isTimerRunning = false;
-    }
-
-    function startMeditationType(type) {
-      currentMeditationType = type;
-      const mode = meditationModes[type];
-      meditationDuration = mode.defaultDuration;
-      meditationTimeElapsed = 0;
-
-      document.getElementById('sessionTitle').textContent = mode.name;
-      document.getElementById('sessionDescription').textContent = mode.description;
-      document.getElementById('durationValue').textContent = meditationDuration + ' Min';
-
-      document.getElementById('meditationContent').style.display = 'none';
-      document.getElementById('meditationSession').style.display = 'block';
-
-      resetTimer();
-    }
-
-    function backToMenu() {
-      if (meditationTimer) clearInterval(meditationTimer);
-      isTimerRunning = false;
-      document.getElementById('meditationContent').style.display = 'block';
-      document.getElementById('meditationSession').style.display = 'none';
-      document.getElementById('startBtn').style.display = 'block';
-      document.getElementById('pauseBtn').style.display = 'none';
-    }
-
-    function startTimer() {
-      if (isTimerRunning) return;
-      isTimerRunning = true;
-      document.getElementById('startBtn').style.display = 'none';
-      document.getElementById('pauseBtn').style.display = 'block';
-
-      meditationTimer = setInterval(() => {
-        if (meditationTimeElapsed < meditationDuration * 60) {
-          meditationTimeElapsed++;
-          updateTimerDisplay();
-          updateElapsedTime();
-        } else {
-          pauseTimer();
-          showMeditationComplete();
-        }
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      if (meditationTimer) clearInterval(meditationTimer);
-      isTimerRunning = false;
-      document.getElementById('startBtn').style.display = 'block';
-      document.getElementById('pauseBtn').style.display = 'none';
-    }
-
-    function resetTimer() {
-      if (meditationTimer) clearInterval(meditationTimer);
-      isTimerRunning = false;
-      meditationTimeElapsed = 0;
-      updateTimerDisplay();
-      updateElapsedTime();
-      document.getElementById('startBtn').style.display = 'block';
-      document.getElementById('pauseBtn').style.display = 'none';
-    }
-
-    function updateTimerDisplay() {
-      const remaining = meditationDuration * 60 - meditationTimeElapsed;
-      const minutes = Math.floor(remaining / 60);
-      const seconds = remaining % 60;
-      document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
-      document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
-    }
-
-    function updateElapsedTime() {
-      const minutes = Math.floor(meditationTimeElapsed / 60);
-      const seconds = meditationTimeElapsed % 60;
-      document.getElementById('elapsedValue').textContent = 
-        (minutes > 0 ? minutes + ' Min ' : '') + (seconds > 0 ? seconds + ' Sek' : '0 Sek');
-    }
-
-    function showMeditationComplete() {
-      const modal = document.getElementById('meditationModal');
-      const sessionDiv = document.getElementById('meditationSession');
-      
-      const completeHTML = `
-        <div class="meditation-complete">
-          <div class="complete-icon">✨</div>
-          <div class="complete-title">Meditation abgeschlossen!</div>
-          <div class="complete-message">Großartig gemacht! Du hast ${meditationDuration} Minuten meditiert.</div>
-          
-          <div class="complete-stats">
-            <div class="complete-stat">
-              <span class="stat-num">${meditationDuration}</span>
-              <span class="stat-label">Minuten</span>
-            </div>
-            <div class="complete-stat">
-              <span class="stat-num">${currentMeditationType === 'breathing' ? '🫁' : currentMeditationType === 'guided' ? '🎧' : currentMeditationType === 'bodyscan' ? '🌊' : '🎯'}</span>
-              <span class="stat-label">${meditationModes[currentMeditationType].name}</span>
-            </div>
-          </div>
-          
-          <div class="complete-benefits">
-            <p>💜 Deine heutige Praxis trägt zu deinem Wohlbefinden bei</p>
-            <p>🌱 Regelmäßige Meditation verbessert Fokus und Ruhe</p>
-          </div>
-          
-          <button class="button" onclick="closeMeditationModal()" style="width: 100%; margin-top: 20px;">Schließen</button>
-        </div>
-      `;
-      
-      sessionDiv.innerHTML = completeHTML;
-    }
-
-    function completeMeditation() {
-      pauseTimer();
-      showMeditationComplete();
-    }
     
     // ========== Check-In Daten ==========
     const checkInQuestions = [
@@ -572,7 +343,20 @@
       document.getElementById('sliderDisplay').textContent = value;
     }
 
+    function saveDailyCheckEntry() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('dailyChecks') || '[]');
+        const entry = { id: generateId('check_'), date: new Date().toISOString(), answers };
+        stored.push(entry);
+        localStorage.setItem('dailyChecks', JSON.stringify(stored));
+      } catch (e) {
+        console.error('Fehler beim Speichern des Daily Check', e);
+      }
+    }
+
     function showSummary() {
+      // save the check always when summary is shown
+      saveDailyCheckEntry();
       const avgMood = answers[1];
       const sleep = answers[2];
       const energy = answers[3];
@@ -622,6 +406,12 @@
       renderQuestion(0);
     }
 
+    // ensure daily checks are always made in the evening: show reminder text in modal header
+    (function setCheckHeaderForEvening(){
+      const modalTitleEl = document.getElementById('modalTitle');
+      if (modalTitleEl) modalTitleEl.textContent = 'Täglicher Check-In (Abends)';
+    })();
+
     function closeModal() {
       modal.classList.remove('active');
     }
@@ -655,6 +445,300 @@
         };
       }
     });
+
+    // ========== Aufgabenmanagement (Todo & Kalender) ==========
+    let areas = [];
+    let todos = [];
+    let blocks = [];
+    let currentFilter = 'all';
+    let currentWeekOffset = 0;
+
+    function generateId(prefix = '') {
+      return prefix + Math.random().toString(36).slice(2, 9);
+    }
+
+    function saveData() {
+      localStorage.setItem('areas', JSON.stringify(areas));
+      localStorage.setItem('todos', JSON.stringify(todos));
+      localStorage.setItem('blocks', JSON.stringify(blocks));
+    }
+
+    function loadData() {
+      areas = JSON.parse(localStorage.getItem('areas') || 'null') || [];
+      todos = JSON.parse(localStorage.getItem('todos') || 'null') || [];
+      blocks = JSON.parse(localStorage.getItem('blocks') || 'null') || [];
+    }
+
+    function initDefaultAreas() {
+      if (areas.length === 0) {
+        areas.push({id: generateId('area_'), name: 'Inbox', color: '#64748b', icon: '📥'});
+        areas.push({id: generateId('area_'), name: 'Arbeit', color: '#6366f1', icon: '💼'});
+        areas.push({id: generateId('area_'), name: 'Privat', color: '#10b981', icon: '🏠'});
+        saveData();
+      }
+    }
+
+    function initTasks() {
+      loadData();
+      initDefaultAreas();
+      renderAreasList();
+      renderBacklog();
+      renderTodoList();
+      renderCalendar();
+    }
+
+    function renderAreasList() {
+      const el = document.getElementById('areasList');
+      const sel = document.getElementById('quickArea');
+      el.innerHTML = '';
+      sel.innerHTML = '';
+      areas.forEach(a => {
+        const d = document.createElement('div');
+        d.className = 'area-item';
+        d.innerHTML = `<span class="area-icon">${a.icon || '🔹'}</span><span class="area-name">${a.name}</span>`;
+        el.appendChild(d);
+
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.name;
+        sel.appendChild(opt);
+      });
+    }
+
+    function addTodoQuick() {
+      const title = document.getElementById('quickTitle').value.trim();
+      const area = document.getElementById('quickArea').value;
+      const energy = document.getElementById('quickEnergy').value;
+      if (!title) return alert('Bitte Titel eingeben');
+      const todo = {id: generateId('t_'), title, areaId: area, status: 'open', energy, note: '', duration: null, deadline: null};
+      todos.unshift(todo);
+      saveData();
+      document.getElementById('quickTitle').value = '';
+      renderBacklog();
+      renderTodoList();
+      renderCalendarBacklog();
+    }
+
+    function renderBacklog() {
+      const list = document.getElementById('backlogList');
+      list.innerHTML = '';
+      todos.filter(t => t.status === 'open').forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'backlog-item';
+        li.draggable = true;
+        li.dataset.id = t.id;
+        li.innerHTML = `<input type="checkbox" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTodoStatus('${t.id}', this.checked)" />
+                        <span class="backlog-title">${t.title}</span>
+                        <span class="energy ${t.energy}"></span>`;
+        li.addEventListener('dragstart', (ev) => {
+          ev.dataTransfer.setData('text/plain', t.id);
+        });
+        list.appendChild(li);
+      });
+      renderCalendarBacklog();
+    }
+
+    function renderCalendarBacklog() {
+      const list = document.getElementById('calendarBacklog');
+      if (!list) return;
+      list.innerHTML = '';
+      todos.filter(t => t.status === 'open').forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'backlog-item';
+        li.draggable = true;
+        li.dataset.id = t.id;
+        li.textContent = t.title + ' ';
+        const badge = document.createElement('span'); badge.className = 'energy ' + t.energy; li.appendChild(badge);
+        li.addEventListener('dragstart', (ev) => ev.dataTransfer.setData('text/plain', t.id));
+        list.appendChild(li);
+      });
+    }
+
+    function renderTodoList() {
+      const el = document.getElementById('todoList');
+      el.innerHTML = '';
+      let items = todos.slice();
+      if (currentFilter === 'open') items = items.filter(t => t.status === 'open');
+      if (currentFilter === 'done') items = items.filter(t => t.status === 'done');
+      items.forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'todo-item';
+        li.innerHTML = `<label><input type="checkbox" ${t.status==='done'?'checked':''} onchange="toggleTodoStatus('${t.id}', this.checked)"/> <span>${t.title}</span></label>
+                        <div class="todo-meta"><span class="energy ${t.energy}"></span></div>`;
+        el.appendChild(li);
+      });
+    }
+
+    function toggleTodoStatus(id, checked) {
+      const t = todos.find(x => x.id === id);
+      if (!t) return;
+      t.status = checked ? 'done' : 'open';
+      saveData();
+      renderBacklog();
+      renderTodoList();
+      renderCalendarBacklog();
+    }
+
+    function applyFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+      renderTodoList();
+    }
+
+    function toggleView(view) {
+      document.getElementById('todoView').style.display = view === 'todo' ? 'flex' : 'none';
+      document.getElementById('calendarView').style.display = view === 'calendar' ? 'flex' : 'none';
+      document.getElementById('tabTodo').classList.toggle('active', view === 'todo');
+      document.getElementById('tabCalendar').classList.toggle('active', view === 'calendar');
+      if (view === 'calendar') renderCalendar();
+    }
+
+    // Calendar rendering (simple week view)
+    function startOfWeek(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday as first day
+      return new Date(d.setDate(diff));
+    }
+
+    function changeWeek(delta) {
+      currentWeekOffset += delta;
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      const now = new Date();
+      const offsetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + currentWeekOffset * 7);
+      const weekStart = startOfWeek(offsetDate);
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + i);
+        days.push(d);
+      }
+      document.getElementById('weekLabel').textContent = days[0].toLocaleDateString() + ' - ' + days[6].toLocaleDateString();
+
+      days.forEach(day => {
+        const col = document.createElement('div');
+        col.className = 'calendar-day';
+        col.dataset.date = day.toISOString().slice(0,10);
+        col.innerHTML = `<div class="calendar-day-header">${day.toLocaleDateString(undefined,{weekday:'short', day:'numeric'})}</div><div class="calendar-day-body"></div>`;
+        const body = col.querySelector('.calendar-day-body');
+        body.addEventListener('dragover', (e) => e.preventDefault());
+        body.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const todoId = e.dataTransfer.getData('text/plain');
+          if (!todoId) return;
+          const block = {id: generateId('b_'), todoId, date: col.dataset.date, start: '09:00', duration: 60};
+          blocks.push(block);
+          saveData();
+          renderCalendar();
+        });
+
+        // render blocks for this day
+        blocks.filter(b => b.date === col.dataset.date).forEach(b => {
+          const t = todos.find(x => x.id === b.todoId) || {title: 'gelöschte Aufgabe', energy: 'green'};
+          const bl = document.createElement('div');
+          bl.className = 'calendar-block';
+          const color = t.energy === 'green' ? '#10b981' : t.energy === 'yellow' ? '#f59e0b' : '#ef4444';
+          bl.style.background = color;
+          bl.textContent = t.title + ' (' + Math.floor(b.duration/60) + 'h)';
+          bl.onclick = () => editBlock(b.id);
+          body.appendChild(bl);
+        });
+
+        grid.appendChild(col);
+      });
+      renderCalendarBacklog();
+    }
+
+    function editBlock(blockId) {
+      const b = blocks.find(x => x.id === blockId);
+      if (!b) return;
+      const newDur = prompt('Dauer in Minuten (aktuell ' + b.duration + ')', b.duration);
+      if (newDur === null) return;
+      if (newDur === '') return;
+      b.duration = parseInt(newDur) || b.duration;
+      saveData();
+      renderCalendar();
+    }
+
+    // Tagebuch: load/save/render functions
+    function loadDiary() {
+      try { return JSON.parse(localStorage.getItem('diaryEntries') || '[]'); } catch (e) { return []; }
+    }
+
+    function saveDiary(entries) {
+      localStorage.setItem('diaryEntries', JSON.stringify(entries));
+    }
+
+    function openDiaryModal() {
+      document.getElementById('diaryModal').classList.add('active');
+      const today = new Date().toISOString().slice(0,10);
+      document.getElementById('diaryDate').value = today;
+      document.getElementById('promotedValue').value = '';
+      document.getElementById('promotedNote').value = '';
+      document.getElementById('violatedValue').value = '';
+      document.getElementById('violatedNote').value = '';
+      document.getElementById('satisfaction').value = 'neutral';
+      document.getElementById('diaryNote').value = '';
+    }
+
+    function closeDiaryModal() {
+      document.getElementById('diaryModal').classList.remove('active');
+    }
+
+    function saveDiaryEntry() {
+      const date = document.getElementById('diaryDate').value || new Date().toISOString().slice(0,10);
+      const promotedValue = document.getElementById('promotedValue').value.trim();
+      const promotedNote = document.getElementById('promotedNote').value.trim();
+      const violatedValue = document.getElementById('violatedValue').value.trim();
+      const violatedNote = document.getElementById('violatedNote').value.trim();
+      const satisfaction = document.getElementById('satisfaction').value;
+      const note = document.getElementById('diaryNote').value.trim();
+
+      const entries = loadDiary();
+      const entry = {
+        id: generateId('d_'), date: new Date(date).toISOString(),
+        promoted: { value: promotedValue, note: promotedNote },
+        violated: { value: violatedValue, note: violatedNote },
+        satisfaction, note
+      };
+      entries.push(entry);
+      saveDiary(entries);
+      closeDiaryModal();
+      renderDiaryList();
+      updateLastCheck();
+    }
+
+    function renderDiaryList() {
+      const entries = loadDiary();
+      document.getElementById('diaryCount').textContent = entries.length;
+      const recent = document.getElementById('recentDiary');
+      if (!recent) return;
+      if (entries.length === 0) {
+        recent.textContent = 'Keine Einträge';
+        return;
+      }
+      const last = entries[entries.length-1];
+      const d = new Date(last.date);
+      recent.innerHTML = `<strong>${d.toLocaleDateString()}</strong><div style="font-size:0.9rem;margin-top:6px;">${last.promoted.value || '—'} | ${last.violated.value || '—'} | ${last.satisfaction}</div>`;
+    }
+
+    function updateLastCheck() {
+      try {
+        const checks = JSON.parse(localStorage.getItem('dailyChecks') || '[]');
+        const last = checks.length ? checks[checks.length-1] : null;
+        document.getElementById('lastCheck').textContent = last ? new Date(last.date).toLocaleString() : '—';
+      } catch (e) { document.getElementById('lastCheck').textContent = '—'; }
+    }
+
+    // initialisieren
+    initTasks();
+    renderDiaryList();
+    updateLastCheck();
+
   </script>
 </body>
 </html>
