@@ -1,6 +1,125 @@
 <!doctype html>
 <html lang="de-CH">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI Dashboard — Minimal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>AI Dashboard</h1>
+    <nav><a href="stats.html">Statistik</a></nav>
+  </header>
+
+  <main class="grid">
+    <section class="card" id="tasks">
+      <h2>Aufgaben</h2>
+      <form id="todo-form" class="row">
+        <input id="todo-input" placeholder="Neue Aufgabe..." required>
+        <button type="submit">Hinzufügen</button>
+      </form>
+      <ul id="todo-list" class="list"></ul>
+    </section>
+
+    <section class="card" id="checkin">
+      <h2>Abend-Check</h2>
+      <form id="checkin-form">
+        <label>Stimmung: <input type="range" id="mood" min="0" max="10" value="7"></label>
+        <label>Energie: <input type="range" id="energy" min="0" max="10" value="6"></label>
+        <label>Stress: <input type="range" id="stress" min="0" max="10" value="3"></label>
+        <textarea id="check-note" placeholder="Kurznotiz..." rows="3"></textarea>
+        <button type="submit">Speichern</button>
+      </form>
+      <div id="last-check" class="muted"></div>
+    </section>
+
+    <section class="card" id="diary">
+      <h2>Tagebuch</h2>
+      <form id="diary-form">
+        <input id="diary-date" type="date">
+        <textarea id="diary-text" placeholder="Eintrag..." rows="4"></textarea>
+        <button type="submit">Speichern</button>
+      </form>
+      <ul id="diary-list" class="list"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>Lokales Demo — Daten im Browser gespeichert (localStorage).</small>
+  </footer>
+
+  <script>
+  // --- Utilities ---
+  function save(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+  function load(key, def){ try{ return JSON.parse(localStorage.getItem(key)) || def; }catch(e){return def;} }
+
+  // --- Todos ---
+  const todoForm = document.getElementById('todo-form');
+  const todoInput = document.getElementById('todo-input');
+  const todoListEl = document.getElementById('todo-list');
+  let todos = load('todos', []);
+
+  function renderTodos(){ todoListEl.innerHTML=''; todos.forEach(t=>{
+    const li=document.createElement('li'); li.className = t.done? 'done':'';
+    li.innerHTML = `<label><input type="checkbox" ${t.done? 'checked':''} data-id="${t.id}"> <span>${t.text}</span></label> <button data-del="${t.id}">✖</button>`;
+    todoListEl.appendChild(li);
+  }); }
+
+  todoForm.addEventListener('submit', e=>{
+    e.preventDefault(); const text = todoInput.value.trim(); if(!text) return;
+    const item = {id:Date.now(), text, done:false}; todos.unshift(item); save('todos',todos); todoInput.value=''; renderTodos();
+  });
+
+  todoListEl.addEventListener('change', e=>{
+    if(e.target.matches('input[type=checkbox]')){
+      const id = +e.target.dataset.id; const t = todos.find(x=>x.id===id); if(t) t.done = e.target.checked; save('todos',todos); renderTodos();
+    }
+  });
+
+  todoListEl.addEventListener('click', e=>{
+    if(e.target.matches('button[data-del]')){
+      const id=+e.target.getAttribute('data-del'); todos = todos.filter(x=>x.id!==id); save('todos',todos); renderTodos();
+    }
+  });
+
+  renderTodos();
+
+  // --- Check-in ---
+  const checkForm = document.getElementById('checkin-form');
+  const lastCheckEl = document.getElementById('last-check');
+  function showLastCheck(){
+    const checks = load('dailyChecks', []); if(!checks.length){ lastCheckEl.textContent='Noch keine Einträge.'; return; }
+    const last = checks[checks.length-1]; lastCheckEl.textContent = `${last.date} — Stimmung ${last.mood}/10, Energie ${last.energy}/10, Stress ${last.stress}/10 — ${last.note||''}`;
+  }
+  checkForm.addEventListener('submit', e=>{
+    e.preventDefault(); const entry={ date:new Date().toISOString().slice(0,10), mood:+document.getElementById('mood').value, energy:+document.getElementById('energy').value, stress:+document.getElementById('stress').value, note:document.getElementById('check-note').value };
+    const arr = load('dailyChecks', []); arr.push(entry); save('dailyChecks', arr); showLastCheck();
+  });
+  showLastCheck();
+
+  // --- Diary ---
+  const diaryForm = document.getElementById('diary-form');
+  const diaryDate = document.getElementById('diary-date');
+  const diaryText = document.getElementById('diary-text');
+  const diaryList = document.getElementById('diary-list');
+  let diary = load('diaryEntries', []);
+
+  function renderDiary(){ diaryList.innerHTML=''; diary.slice().reverse().forEach(d=>{
+    const li = document.createElement('li'); li.innerHTML = `<strong>${d.date}</strong>: ${d.text} <button data-id="${d.id}">✖</button>`; diaryList.appendChild(li);
+  }); }
+
+  diaryForm.addEventListener('submit', e=>{ e.preventDefault(); const date = diaryDate.value || new Date().toISOString().slice(0,10); const text = diaryText.value.trim(); if(!text) return; diary.push({id:Date.now(), date, text}); save('diaryEntries', diary); diaryText.value=''; diaryDate.value=''; renderDiary(); });
+
+  diaryList.addEventListener('click', e=>{ if(e.target.matches('button[data-id]')){ const id=+e.target.getAttribute('data-id'); diary = diary.filter(x=>x.id!==id); save('diaryEntries', diary); renderDiary(); } });
+
+  renderDiary();
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="de-CH">
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KI Assistent Dashboard</title>
@@ -152,7 +271,6 @@
         <button class="btn-secondary" id="prevBtn" style="display: none;">← Zurück</button>
         <button class="btn-primary-modal" id="nextBtn">Weiter →</button>
       </div>
-    </div>
     </div>
 
     <!-- Diary Modal -->

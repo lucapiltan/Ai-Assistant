@@ -1,6 +1,37 @@
 <!doctype html>
 <html lang="de-CH">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Statistik — Abend-Check</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header"><h1>Statistik</h1><nav><a href="index.html">Dashboard</a></nav></header>
+  <main class="grid">
+    <section class="card">
+      <h2>Zeitraum</h2>
+      <div class="row" style="margin-top:8px">
+        <button data-days="7">7 Tage</button>
+        <button data-days="30">30 Tage</button>
+        <button data-days="60">60 Tage</button>
+        <button data-days="90">90 Tage</button>
+      </div>
+      <div id="stats" class="muted" style="margin-top:12px">Wähle einen Zeitraum.</div>
+    </section>
+  </main>
+  <footer class="site-footer"><small>Statistik aus localStorage (dailyChecks).</small></footer>
+
+  <script>
+  function load(key, def){ try{return JSON.parse(localStorage.getItem(key))||def}catch(e){return def} }
+  function compute(days){ const arr = load('dailyChecks',[]); if(!arr.length) return 'Keine Einträge.'; const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-days+1); const sel = arr.filter(x=>new Date(x.date) >= cutoff); if(!sel.length) return 'Keine Einträge im Zeitraum.'; const avg = (k)=> (sel.reduce((s,x)=>s+(x[k]||0),0)/sel.length).toFixed(1); return `Auswahl: ${sel.length} Einträge — Stimmung ${avg('mood')}, Energie ${avg('energy')}, Stress ${avg('stress')}`; }
+  document.querySelectorAll('button[data-days]').forEach(b=> b.addEventListener('click', ()=>{ document.getElementById('stats').textContent = compute(+b.dataset.days); }));
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="de-CH">
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Statistik - Täglicher Check</title>
