@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KI Assistent Dashboard</title>
+  <meta name="description" content="Persönliches Dashboard für deinen KI Assistenten" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header>
+    <h1 class="welcome">Willkommen zurück, Luca 👋</h1>
+    <p class="subtitle">Übersicht deines persönlichen KI Assistenten</p>
+  </header>
+
+  <main>
+    <!-- Psychische Faktoren -->
+    <section>
+      <h2 class="section-title">🧠 Psychische Faktoren</h2>
+      
+      <div class="grid">
+        <!-- Täglicher Check -->
+        <div class="card">
+          <div class="card-title"><span class="card-icon">✅</span>Täglicher Check-In</div>
+          <div class="metric">
+            <span class="metric-label">Heute durchgeführt</span>
+            <span class="status good">Erledigt</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Stimmung</span>
+            <span class="metric-value">7/10</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Energie</span>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 70%"></div>
+            </div>
+          </div>
+          <button class="button">Check durchführen</button>
+        </div>
+
+        <!-- Stressabbau -->
+        <div class="card">
+          <div class="card-title"><span class="card-icon">😌</span>Stressabbau & Entspannung</div>
+          <div class="metric">
+            <span class="metric-label">Entspannungsminuten heute</span>
+            <span class="metric-value">23 Min</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Wochentrend</span>
+            <span class="status good">Stabil</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Empfohlene Aktivität</span>
+            <span class="metric-value">Meditation</span>
+          </div>
+          <button class="button">Sitzung starten</button>
+        </div>
+
+        <!-- Schlafqualität -->
+        <div class="card">
+          <div class="card-title"><span class="card-icon">😴</span>Schlafqualität & Erholung</div>
+          <div class="metric">
+            <span class="metric-label">Letzte Nacht geschlafen</span>
+            <span class="metric-value">7.5h</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Schlafqualität</span>
+            <span class="status good">Gut</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Empfehlung</span>
+            <span class="metric-value">22:30 - 06:30</span>
+          </div>
+          <button class="button">Details anschauen</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Assistent Features -->
+    <section>
+      <h2 class="section-title">🤖 Assistent Features</h2>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-name">Chat & Konversation</div>
+          <div class="feature-desc">Sprich mit deinem persönlichen KI Assistenten über alles</div>
+          <button class="button">Öffnen</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <div class="feature-name">Wissensdatenbank</div>
+          <div class="feature-desc">Zugriff auf dein persönliches Wissensnetzwerk</div>
+          <button class="button">Durchsuchen</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-name">Aufgabenmanagement</div>
+          <div class="feature-desc">Organisiere und verwalte deine To-Do Listen</div>
+          <button class="button">Verwalten</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-name">Analytiken & Insights</div>
+          <div class="feature-desc">Detaillierte Analyse deines Fortschritts</div>
+          <button class="button">Anschauen</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-name">Ziele & Meilensteine</div>
+          <div class="feature-desc">Tracke deine persönlichen Ziele</div>
+          <button class="button">Setzen</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <div class="feature-name">Einstellungen</div>
+          <div class="feature-desc">Personalisiere deinen Assistenten</div>
+          <button class="button">Konfigurieren</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>&copy; <span id="year"></span> Dein persönlicher KI Assistent | Datenschutz & Sicherheit gewährleistet</small>
+  </footer>
+
+  <!-- Check-In Modal -->
+  <div class="modal" id="checkInModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Täglicher Check-In</h2>
+        <div class="modal-progress">
+          <span id="questionCounter">1</span> / 10
+          <div class="progress-bar-modal">
+            <div class="progress-fill-modal" id="modalProgressBar" style="width: 10%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="questionContainer">
+        <!-- Questions werden hier eingefügt -->
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-secondary" id="closeBtn" style="display: none;">Abbrechen</button>
+        <button class="btn-secondary" id="prevBtn" style="display: none;">← Zurück</button>
+        <button class="btn-primary-modal" id="nextBtn">Weiter →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    
+    // Check-In Daten
+    const checkInQuestions = [
+      {
+        id: 1,
+        type: 'slider',
+        title: 'Wie ist deine aktuelle Stimmung?',
+        subtitle: 'Von sehr negativ zu sehr positiv',
+        minLabel: 'Sehr negativ',
+        maxLabel: 'Sehr positiv',
+        min: 1,
+        max: 10,
+        value: 5
+      },
+      {
+        id: 2,
+        type: 'multiple-choice',
+        title: 'Wie war dein Schlaf in der letzten Nacht?',
+        subtitle: 'Wie erholsam war die Ruhe?',
+        options: ['Sehr schlecht', 'Schlecht', 'Mittelmäßig', 'Gut', 'Sehr gut']
+      },
+      {
+        id: 3,
+        type: 'slider',
+        title: 'Wie energetisch fühlst du dich?',
+        subtitle: 'Von sehr müde zu sehr energiegeladen',
+        minLabel: 'Sehr müde',
+        maxLabel: 'Sehr energiegeladen',
+        min: 1,
+        max: 10,
+        value: 5
+      },
+      {
+        id: 4,
+        type: 'multiple-choice',
+        title: 'Wie ist dein Stresslevel?',
+        subtitle: 'Wähle dein aktuelles Empfinden',
+        options: ['Völlig entspannt', 'Entspannt', 'Neutral', 'Gestresst', 'Sehr gestresst']
+      },
+      {
+        id: 5,
+        type: 'slider',
+        title: 'Wie konzentriert kannst du dich heute fokussieren?',
+        subtitle: 'Von sehr schwierig zu sehr leicht',
+        minLabel: 'Sehr schwierig',
+        maxLabel: 'Sehr leicht',
+        min: 1,
+        max: 10,
+        value: 5
+      },
+      {
+        id: 6,
+        type: 'multiple-choice',
+        title: 'Wie motiviert bist du heute?',
+        subtitle: 'Bewerte deine Motivation',
+        options: ['Keine Motivation', 'Wenig motiviert', 'Neutral', 'Motiviert', 'Sehr motiviert']
+      },
+      {
+        id: 7,
+        type: 'slider',
+        title: 'Wie zufrieden bist du mit deinen heutigen Fortschritten?',
+        subtitle: 'Von unzufrieden zu sehr zufrieden',
+        minLabel: 'Unzufrieden',
+        maxLabel: 'Sehr zufrieden',
+        min: 1,
+        max: 10,
+        value: 5
+      },
+      {
+        id: 8,
+        type: 'multiple-choice',
+        title: 'Wie ist deine soziale Verbindung heute?',
+        subtitle: 'Wie verbunden fühlst du dich?',
+        options: ['Isoliert', 'Einsam', 'Neutral', 'Verbunden', 'Sehr verbunden']
+      },
+      {
+        id: 9,
+        type: 'slider',
+        title: 'Wie ausgewogen ist dein heutiger Tag?',
+        subtitle: 'Von unausgeglichen zu perfekt ausgewogen',
+        minLabel: 'Unausgeglichen',
+        maxLabel: 'Perfekt',
+        min: 1,
+        max: 10,
+        value: 5
+      },
+      {
+        id: 10,
+        type: 'multiple-choice',
+        title: 'Was brauchst du heute am meisten?',
+        subtitle: 'Wähle das Wichtigste für dich',
+        options: ['Ruhe & Schlaf', 'Bewegung & Sport', 'Soziale Kontakte', 'Kreativität & Spaß', 'Produktivität & Erfolg']
+      }
+    ];
+    
+    let currentQuestion = 0;
+    let answers = {};
+    const modal = document.getElementById('checkInModal');
+    const questionContainer = document.getElementById('questionContainer');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const questionCounter = document.getElementById('questionCounter');
+    const modalProgressBar = document.getElementById('modalProgressBar');
+    const modalTitle = document.getElementById('modalTitle');
+
+    function renderQuestion(index) {
+      const question = checkInQuestions[index];
+      let html = `
+        <div class="question-text">${question.title}</div>
+        ${question.subtitle ? `<div class="question-subtitle">${question.subtitle}</div>` : ''}
+      `;
+
+      if (question.type === 'multiple-choice') {
+        html += '<div class="options-group">';
+        question.options.forEach((option, i) => {
+          const isSelected = answers[question.id] === i;
+          html += `
+            <button class="option-button ${isSelected ? 'selected' : ''}" 
+                    onclick="selectOption(${question.id}, ${i}, '${option}')">
+              ${option}
+            </button>
+          `;
+        });
+        html += '</div>';
+      } else if (question.type === 'slider') {
+        const currentValue = answers[question.id] !== undefined ? answers[question.id] : question.value;
+        html += `
+          <div class="slider-container">
+            <div class="slider-labels">
+              <span>${question.minLabel}</span>
+              <span>${question.maxLabel}</span>
+            </div>
+            <input type="range" min="${question.min}" max="${question.max}" value="${currentValue}" 
+                   class="slider-input" onchange="updateSliderValue(${question.id}, this.value)" 
+                   oninput="updateSliderDisplay(this.value)">
+            <div class="slider-value" id="sliderDisplay">${currentValue}</div>
+          </div>
+        `;
+      }
+
+      questionContainer.innerHTML = html;
+      
+      // Update progress
+      questionCounter.textContent = index + 1;
+      const progress = ((index + 1) / checkInQuestions.length) * 100;
+      modalProgressBar.style.width = progress + '%';
+
+      // Update buttons
+      prevBtn.style.display = index > 0 ? 'block' : 'none';
+      nextBtn.textContent = index === checkInQuestions.length - 1 ? '✓ Abschließen' : 'Weiter →';
+    }
+
+    function selectOption(questionId, optionIndex, optionText) {
+      answers[questionId] = optionIndex;
+      document.querySelectorAll('.option-button').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+    }
+
+    function updateSliderValue(questionId, value) {
+      answers[questionId] = parseInt(value);
+    }
+
+    function updateSliderDisplay(value) {
+      document.getElementById('sliderDisplay').textContent = value;
+    }
+
+    function showSummary() {
+      const avgMood = answers[1];
+      const sleep = answers[2];
+      const energy = answers[3];
+      const stress = answers[4];
+      const need = checkInQuestions[9].options[answers[10]];
+
+      let summary = `
+        <div class="summary-content">
+          <div class="summary-title">✓ Check-In abgeschlossen!</div>
+          <div class="summary-text">
+            Danke, dass du dir Zeit für Selbstreflektion genommen hast. Hier ist eine kurze Zusammenfassung deines heutigen Zustands.
+          </div>
+          <div class="summary-stats">
+            <div class="stat-item">
+              <span class="stat-label">Durchschnittliche Stimmung</span>
+              <span class="stat-value">${avgMood}/10</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Energielevel</span>
+              <span class="stat-value">${energy}/10</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Stresslevel</span>
+              <span class="stat-value">${['Entspannt', 'Entspannt', 'Neutral', 'Gestresst', 'Sehr gestresst'][stress]}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Du brauchst</span>
+              <span class="stat-value">${need}</span>
+            </div>
+          </div>
+          <p class="summary-text">
+            Versuche heute, dich auf das zu konzentrieren, was du am meisten brauchst. Der Assistent wird dir dabei helfen! 💪
+          </p>
+        </div>
+      `;
+
+      questionContainer.innerHTML = summary;
+      prevBtn.style.display = 'none';
+      nextBtn.textContent = 'Fertig';
+      nextBtn.onclick = () => closeModal();
+    }
+
+    function openCheckInModal() {
+      currentQuestion = 0;
+      answers = {};
+      modal.classList.add('active');
+      renderQuestion(0);
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < checkInQuestions.length - 1) {
+        currentQuestion++;
+        renderQuestion(currentQuestion);
+      } else if (Object.keys(answers).length < checkInQuestions.length) {
+        alert('Bitte beantworte alle Fragen vor dem Fortfahren');
+      } else {
+        showSummary();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion(currentQuestion);
+      }
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+
+    // Verbinde den Check-In Button mit dem Modal
+    document.querySelectorAll('.button').forEach(btn => {
+      if (btn.parentElement.querySelector('.card-title')?.textContent.includes('Täglicher Check-In')) {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          openCheckInModal();
+        };
+      }
+    });
+  </script>
+</body>
+</html>
+``
