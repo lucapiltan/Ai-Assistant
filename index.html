@@ -126,6 +126,13 @@
           <div class="feature-desc">Personalisiere deinen Assistenten</div>
           <button class="button">Konfigurieren</button>
         </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧘</div>
+          <div class="feature-name">Meditationsmodus</div>
+          <div class="feature-desc">Entspannende Meditationen und Atemübungen</div>
+          <button class="button" onclick="openMeditationModal()">Starten</button>
+        </div>
       </div>
     </section>
   </main>
@@ -133,6 +140,80 @@
   <footer>
     <small>&copy; <span id="year"></span> Dein persönlicher KI Assistent | Datenschutz & Sicherheit gewährleistet</small>
   </footer>
+
+  <!-- Meditationsmodus Modal -->
+  <div class="modal" id="meditationModal">
+    <div class="modal-content meditation-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">🧘 Meditationsmodus</h2>
+        <button class="modal-close-btn" onclick="closeMeditationModal()">✕</button>
+      </div>
+
+      <div id="meditationContent">
+        <div class="meditation-menu">
+          <div class="meditation-option" onclick="startMeditationType('breathing')">
+            <div class="meditation-icon">🫁</div>
+            <div class="meditation-name">Atemübungen</div>
+            <div class="meditation-duration">5 - 15 Min</div>
+          </div>
+
+          <div class="meditation-option" onclick="startMeditationType('guided')">
+            <div class="meditation-icon">🎧</div>
+            <div class="meditation-name">Geführte Meditation</div>
+            <div class="meditation-duration">10 - 30 Min</div>
+          </div>
+
+          <div class="meditation-option" onclick="startMeditationType('bodyscan')">
+            <div class="meditation-icon">🌊</div>
+            <div class="meditation-name">Body Scan</div>
+            <div class="meditation-duration">15 - 20 Min</div>
+          </div>
+
+          <div class="meditation-option" onclick="startMeditationType('mindfulness')">
+            <div class="meditation-icon">🎯</div>
+            <div class="meditation-name">Achtsamkeit</div>
+            <div class="meditation-duration">10 - 25 Min</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="meditationSession" style="display: none;">
+        <div class="session-header">
+          <button class="back-btn" onclick="backToMenu()">← Zurück</button>
+          <div class="session-title" id="sessionTitle"></div>
+        </div>
+
+        <div class="meditation-timer">
+          <div class="timer-circle">
+            <div class="timer-display">
+              <span id="timerMinutes">05</span>:<span id="timerSeconds">00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="session-controls">
+          <button class="control-btn" id="startBtn" onclick="startTimer()">Starten</button>
+          <button class="control-btn" id="pauseBtn" onclick="pauseTimer()" style="display: none;">Pausieren</button>
+          <button class="control-btn reset-btn" onclick="resetTimer()">Zurücksetzen</button>
+        </div>
+
+        <div class="session-description" id="sessionDescription"></div>
+
+        <div class="meditation-stats">
+          <div class="stat">
+            <div class="stat-label">Gewählte Dauer</div>
+            <div class="stat-value" id="durationValue">5 Min</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Verbrauchte Zeit</div>
+            <div class="stat-value" id="elapsedValue">0 Min</div>
+          </div>
+        </div>
+
+        <button class="button complete-btn" onclick="completeMeditation()" style="margin-top: 20px; width: 100%;">✓ Beenden</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Check-In Modal -->
   <div class="modal" id="checkInModal">
@@ -162,7 +243,168 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
     
-    // Check-In Daten
+    // ========== Meditationsmodus ==========
+    const meditationModes = {
+      breathing: {
+        name: 'Atemübungen',
+        description: 'Vertiefte Atemübungen zur Beruhigung und Fokussierung. Atme langsam ein, halte an und atme langsam aus.',
+        durations: [5, 10, 15],
+        defaultDuration: 10
+      },
+      guided: {
+        name: 'Geführte Meditation',
+        description: 'Eine ruhige, geführte Meditation, die dich durch Entspannung und inneren Frieden führt.',
+        durations: [10, 20, 30],
+        defaultDuration: 20
+      },
+      bodyscan: {
+        name: 'Body Scan',
+        description: 'Systematische Körperentspannung. Konzentriere dich auf jeden Körperteil und entspanne ihn bewusst.',
+        durations: [15, 20],
+        defaultDuration: 15
+      },
+      mindfulness: {
+        name: 'Achtsamkeit',
+        description: 'Präsentes Bewusstsein und Achtsamkeit. Beobachte deine Gedanken ohne Urteil.',
+        durations: [10, 15, 25],
+        defaultDuration: 15
+      }
+    };
+
+    let currentMeditationType = null;
+    let meditationDuration = 0;
+    let meditationTimeElapsed = 0;
+    let meditationTimer = null;
+    let isTimerRunning = false;
+
+    function openMeditationModal() {
+      const modal = document.getElementById('meditationModal');
+      modal.classList.add('active');
+      document.getElementById('meditationContent').style.display = 'block';
+      document.getElementById('meditationSession').style.display = 'none';
+    }
+
+    function closeMeditationModal() {
+      const modal = document.getElementById('meditationModal');
+      modal.classList.remove('active');
+      if (meditationTimer) clearInterval(meditationTimer);
+      isTimerRunning = false;
+    }
+
+    function startMeditationType(type) {
+      currentMeditationType = type;
+      const mode = meditationModes[type];
+      meditationDuration = mode.defaultDuration;
+      meditationTimeElapsed = 0;
+
+      document.getElementById('sessionTitle').textContent = mode.name;
+      document.getElementById('sessionDescription').textContent = mode.description;
+      document.getElementById('durationValue').textContent = meditationDuration + ' Min';
+
+      document.getElementById('meditationContent').style.display = 'none';
+      document.getElementById('meditationSession').style.display = 'block';
+
+      resetTimer();
+    }
+
+    function backToMenu() {
+      if (meditationTimer) clearInterval(meditationTimer);
+      isTimerRunning = false;
+      document.getElementById('meditationContent').style.display = 'block';
+      document.getElementById('meditationSession').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'block';
+      document.getElementById('pauseBtn').style.display = 'none';
+    }
+
+    function startTimer() {
+      if (isTimerRunning) return;
+      isTimerRunning = true;
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('pauseBtn').style.display = 'block';
+
+      meditationTimer = setInterval(() => {
+        if (meditationTimeElapsed < meditationDuration * 60) {
+          meditationTimeElapsed++;
+          updateTimerDisplay();
+          updateElapsedTime();
+        } else {
+          pauseTimer();
+          showMeditationComplete();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (meditationTimer) clearInterval(meditationTimer);
+      isTimerRunning = false;
+      document.getElementById('startBtn').style.display = 'block';
+      document.getElementById('pauseBtn').style.display = 'none';
+    }
+
+    function resetTimer() {
+      if (meditationTimer) clearInterval(meditationTimer);
+      isTimerRunning = false;
+      meditationTimeElapsed = 0;
+      updateTimerDisplay();
+      updateElapsedTime();
+      document.getElementById('startBtn').style.display = 'block';
+      document.getElementById('pauseBtn').style.display = 'none';
+    }
+
+    function updateTimerDisplay() {
+      const remaining = meditationDuration * 60 - meditationTimeElapsed;
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    function updateElapsedTime() {
+      const minutes = Math.floor(meditationTimeElapsed / 60);
+      const seconds = meditationTimeElapsed % 60;
+      document.getElementById('elapsedValue').textContent = 
+        (minutes > 0 ? minutes + ' Min ' : '') + (seconds > 0 ? seconds + ' Sek' : '0 Sek');
+    }
+
+    function showMeditationComplete() {
+      const modal = document.getElementById('meditationModal');
+      const sessionDiv = document.getElementById('meditationSession');
+      
+      const completeHTML = `
+        <div class="meditation-complete">
+          <div class="complete-icon">✨</div>
+          <div class="complete-title">Meditation abgeschlossen!</div>
+          <div class="complete-message">Großartig gemacht! Du hast ${meditationDuration} Minuten meditiert.</div>
+          
+          <div class="complete-stats">
+            <div class="complete-stat">
+              <span class="stat-num">${meditationDuration}</span>
+              <span class="stat-label">Minuten</span>
+            </div>
+            <div class="complete-stat">
+              <span class="stat-num">${currentMeditationType === 'breathing' ? '🫁' : currentMeditationType === 'guided' ? '🎧' : currentMeditationType === 'bodyscan' ? '🌊' : '🎯'}</span>
+              <span class="stat-label">${meditationModes[currentMeditationType].name}</span>
+            </div>
+          </div>
+          
+          <div class="complete-benefits">
+            <p>💜 Deine heutige Praxis trägt zu deinem Wohlbefinden bei</p>
+            <p>🌱 Regelmäßige Meditation verbessert Fokus und Ruhe</p>
+          </div>
+          
+          <button class="button" onclick="closeMeditationModal()" style="width: 100%; margin-top: 20px;">Schließen</button>
+        </div>
+      `;
+      
+      sessionDiv.innerHTML = completeHTML;
+    }
+
+    function completeMeditation() {
+      pauseTimer();
+      showMeditationComplete();
+    }
+    
+    // ========== Check-In Daten ==========
     const checkInQuestions = [
       {
         id: 1,

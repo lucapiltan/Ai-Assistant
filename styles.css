@@ -478,3 +478,278 @@ footer {
   color: var(--primary-light);
   font-weight: 600;
 }
+
+/* Meditationsmodus Styles */
+.meditation-modal {
+  max-width: 500px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--text);
+}
+
+.meditation-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.meditation-option {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.meditation-option:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  transform: translateY(-4px);
+}
+
+.meditation-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.meditation-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.meditation-duration {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.session-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.back-btn {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.session-title {
+  flex: 1;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.meditation-timer {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.timer-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+  position: relative;
+}
+
+.timer-circle::before {
+  content: '';
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  z-index: 1;
+}
+
+.timer-display {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text);
+  z-index: 2;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 4px;
+}
+
+.session-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.control-btn {
+  padding: 12px 24px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.control-btn.reset-btn {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+}
+
+.control-btn.reset-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.session-description {
+  background: var(--bg);
+  border-left: 4px solid var(--primary);
+  padding: 16px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  margin: 24px 0;
+  line-height: 1.6;
+}
+
+.meditation-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stat {
+  background: var(--bg);
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-light);
+}
+
+.complete-btn {
+  background: var(--primary);
+}
+
+.complete-btn:hover {
+  background: var(--primary-dark);
+}
+
+.meditation-complete {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.complete-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.complete-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 12px;
+}
+
+.complete-message {
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  font-size: 1rem;
+}
+
+.complete-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.complete-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 4px;
+}
+
+.complete-benefits {
+  margin: 24px 0;
+  padding: 16px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+}
+
+.complete-benefits p {
+  color: var(--text);
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
