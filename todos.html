@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todos — AI Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-nav">
+      <a href="index.html" class="back-link">← Zurück</a>
+      <h1>Deine Aufgaben</h1>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Neue Aufgabe hinzufügen</h2>
+      <form id="todo-form">
+        <input type="text" id="todo-input" placeholder="Was möchtest du erledigen?" required>
+        <button type="submit">Hinzufügen</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Offene Aufgaben</h2>
+      <ul id="todo-list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Abgeschlossen</h2>
+      <ul id="done-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Verwalte deine täglichen Aufgaben effizienter.</p>
+  </footer>
+
+  <script>
+    const db = {
+      get(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; } },
+      set(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    };
+
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+    const doneList = document.getElementById('done-list');
+
+    function renderTodos() {
+      const todos = db.get('todos');
+      todoList.innerHTML = '';
+      doneList.innerHTML = '';
+
+      const active = todos.filter(t => !t.done);
+      const done = todos.filter(t => t.done);
+
+      active.forEach((todo, idx) => {
+        const idx_orig = todos.indexOf(todo);
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <label>
+            <input type="checkbox" data-idx="${idx_orig}">
+            ${todo.text}
+          </label>
+          <button class="del-btn" data-idx="${idx_orig}">✕</button>
+        `;
+        todoList.appendChild(li);
+      });
+
+      done.forEach((todo, idx) => {
+        const idx_orig = todos.indexOf(todo);
+        const li = document.createElement('li');
+        li.className = 'done';
+        li.innerHTML = `
+          <label>
+            <input type="checkbox" checked data-idx="${idx_orig}">
+            <span>${todo.text}</span>
+          </label>
+          <button class="del-btn" data-idx="${idx_orig}">✕</button>
+        `;
+        doneList.appendChild(li);
+      });
+
+      if (!active.length) {
+        todoList.innerHTML = '<li class="empty-state">Keine offenen Aufgaben! 🎉</li>';
+      }
+    }
+
+    todoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = todoInput.value.trim();
+      if (!text) return;
+      const todos = db.get('todos');
+      todos.push({ text, done: false });
+      db.set('todos', todos);
+      todoInput.value = '';
+      renderTodos();
+    });
+
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"]')) {
+        const idx = +e.target.dataset.idx;
+        const todos = db.get('todos');
+        if (todos[idx]) {
+          todos[idx].done = e.target.checked;
+          db.set('todos', todos);
+          renderTodos();
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('del-btn')) {
+        const idx = +e.target.dataset.idx;
+        const todos = db.get('todos');
+        todos.splice(idx, 1);
+        db.set('todos', todos);
+        renderTodos();
+      }
+    });
+
+    renderTodos();
+  </script>
+</body>
+</html>

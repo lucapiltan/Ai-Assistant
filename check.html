@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Täglicher Check — AI Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-nav">
+      <a href="index.html" class="back-link">← Zurück</a>
+      <h1>Täglicher Check</h1>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Wie geht es dir heute?</h2>
+      <form id="check-form">
+        <label>
+          Stimmung: <span id="mood-val">7</span>/10
+          <input type="range" id="mood" min="0" max="10" value="7">
+        </label>
+        <label>
+          Energie: <span id="energy-val">6</span>/10
+          <input type="range" id="energy" min="0" max="10" value="6">
+        </label>
+        <label>
+          Stress: <span id="stress-val">3</span>/10
+          <input type="range" id="stress" min="0" max="10" value="3">
+        </label>
+        <textarea id="check-note" placeholder="Kurze Notiz... (optional)" rows="3"></textarea>
+        <button type="submit">Speichern</button>
+      </form>
+      <div id="last-check" class="info"></div>
+    </section>
+
+    <section class="card">
+      <h2>Deine letzten Checks</h2>
+      <ul id="checks-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Täglicher Check hilft dir, dein Wohlbefinden zu verfolgen.</p>
+  </footer>
+
+  <script>
+    const db = {
+      get(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; } },
+      set(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    };
+
+    const checkForm = document.getElementById('check-form');
+    const moodInput = document.getElementById('mood');
+    const energyInput = document.getElementById('energy');
+    const stressInput = document.getElementById('stress');
+    const lastCheckDiv = document.getElementById('last-check');
+    const checksList = document.getElementById('checks-list');
+
+    moodInput.addEventListener('input', () => document.getElementById('mood-val').textContent = moodInput.value);
+    energyInput.addEventListener('input', () => document.getElementById('energy-val').textContent = energyInput.value);
+    stressInput.addEventListener('input', () => document.getElementById('stress-val').textContent = stressInput.value);
+
+    function showLastCheck() {
+      const checks = db.get('dailyChecks');
+      if (!checks.length) {
+        lastCheckDiv.textContent = 'Noch keine Einträge.';
+        return;
+      }
+      const last = checks[checks.length - 1];
+      lastCheckDiv.innerHTML = `<strong>Letzter Eintrag:</strong> ${last.date} — Stimmung ${last.mood}, Energie ${last.energy}, Stress ${last.stress}`;
+    }
+
+    function renderChecksList() {
+      const checks = db.get('dailyChecks');
+      checksList.innerHTML = '';
+      checks.slice().reverse().forEach(c => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div>
+            <strong>${c.date}</strong><br>
+            Stimmung: ${c.mood} | Energie: ${c.energy} | Stress: ${c.stress}
+            ${c.note ? `<br><small>${c.note}</small>` : ''}
+          </div>
+        `;
+        checksList.appendChild(li);
+      });
+    }
+
+    checkForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const checks = db.get('dailyChecks');
+      checks.push({
+        date: new Date().toISOString().slice(0, 10),
+        mood: moodInput.value,
+        energy: energyInput.value,
+        stress: stressInput.value,
+        note: document.getElementById('check-note').value
+      });
+      db.set('dailyChecks', checks);
+      document.getElementById('check-note').value = '';
+      showLastCheck();
+      renderChecksList();
+    });
+
+    showLastCheck();
+    renderChecksList();
+  </script>
+</body>
+</html>
