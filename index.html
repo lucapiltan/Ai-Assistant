@@ -1,884 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de-CH">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AI Dashboard — Minimal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Dashboard</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>AI Dashboard</h1>
-    <nav><a href="stats.html">Statistik</a></nav>
-  </header>
-
-  <main class="grid">
-    <section class="card" id="tasks">
-      <h2>Aufgaben</h2>
-      <form id="todo-form" class="row">
-        <input id="todo-input" placeholder="Neue Aufgabe..." required>
-        <button type="submit">Hinzufügen</button>
-      </form>
-      <ul id="todo-list" class="list"></ul>
-    </section>
-
-    <section class="card" id="checkin">
-      <h2>Abend-Check</h2>
-      <form id="checkin-form">
-        <label>Stimmung: <input type="range" id="mood" min="0" max="10" value="7"></label>
-        <label>Energie: <input type="range" id="energy" min="0" max="10" value="6"></label>
-        <label>Stress: <input type="range" id="stress" min="0" max="10" value="3"></label>
-        <textarea id="check-note" placeholder="Kurznotiz..." rows="3"></textarea>
-        <button type="submit">Speichern</button>
-      </form>
-      <div id="last-check" class="muted"></div>
-    </section>
-
-    <section class="card" id="diary">
-      <h2>Tagebuch</h2>
-      <form id="diary-form">
-        <input id="diary-date" type="date">
-        <textarea id="diary-text" placeholder="Eintrag..." rows="4"></textarea>
-        <button type="submit">Speichern</button>
-      </form>
-      <ul id="diary-list" class="list"></ul>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <small>Lokales Demo — Daten im Browser gespeichert (localStorage).</small>
-  </footer>
-
-  <script>
-  // --- Utilities ---
-  function save(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
-  function load(key, def){ try{ return JSON.parse(localStorage.getItem(key)) || def; }catch(e){return def;} }
-
-  // --- Todos ---
-  const todoForm = document.getElementById('todo-form');
-  const todoInput = document.getElementById('todo-input');
-  const todoListEl = document.getElementById('todo-list');
-  let todos = load('todos', []);
-
-  function renderTodos(){ todoListEl.innerHTML=''; todos.forEach(t=>{
-    const li=document.createElement('li'); li.className = t.done? 'done':'';
-    li.innerHTML = `<label><input type="checkbox" ${t.done? 'checked':''} data-id="${t.id}"> <span>${t.text}</span></label> <button data-del="${t.id}">✖</button>`;
-    todoListEl.appendChild(li);
-  }); }
-
-  todoForm.addEventListener('submit', e=>{
-    e.preventDefault(); const text = todoInput.value.trim(); if(!text) return;
-    const item = {id:Date.now(), text, done:false}; todos.unshift(item); save('todos',todos); todoInput.value=''; renderTodos();
-  });
-
-  todoListEl.addEventListener('change', e=>{
-    if(e.target.matches('input[type=checkbox]')){
-      const id = +e.target.dataset.id; const t = todos.find(x=>x.id===id); if(t) t.done = e.target.checked; save('todos',todos); renderTodos();
-    }
-  });
-
-  todoListEl.addEventListener('click', e=>{
-    if(e.target.matches('button[data-del]')){
-      const id=+e.target.getAttribute('data-del'); todos = todos.filter(x=>x.id!==id); save('todos',todos); renderTodos();
-    }
-  });
-
-  renderTodos();
-
-  // --- Check-in ---
-  const checkForm = document.getElementById('checkin-form');
-  const lastCheckEl = document.getElementById('last-check');
-  function showLastCheck(){
-    const checks = load('dailyChecks', []); if(!checks.length){ lastCheckEl.textContent='Noch keine Einträge.'; return; }
-    const last = checks[checks.length-1]; lastCheckEl.textContent = `${last.date} — Stimmung ${last.mood}/10, Energie ${last.energy}/10, Stress ${last.stress}/10 — ${last.note||''}`;
-  }
-  checkForm.addEventListener('submit', e=>{
-    e.preventDefault(); const entry={ date:new Date().toISOString().slice(0,10), mood:+document.getElementById('mood').value, energy:+document.getElementById('energy').value, stress:+document.getElementById('stress').value, note:document.getElementById('check-note').value };
-    const arr = load('dailyChecks', []); arr.push(entry); save('dailyChecks', arr); showLastCheck();
-  });
-  showLastCheck();
-
-  // --- Diary ---
-  const diaryForm = document.getElementById('diary-form');
-  const diaryDate = document.getElementById('diary-date');
-  const diaryText = document.getElementById('diary-text');
-  const diaryList = document.getElementById('diary-list');
-  let diary = load('diaryEntries', []);
-
-  function renderDiary(){ diaryList.innerHTML=''; diary.slice().reverse().forEach(d=>{
-    const li = document.createElement('li'); li.innerHTML = `<strong>${d.date}</strong>: ${d.text} <button data-id="${d.id}">✖</button>`; diaryList.appendChild(li);
-  }); }
-
-  diaryForm.addEventListener('submit', e=>{ e.preventDefault(); const date = diaryDate.value || new Date().toISOString().slice(0,10); const text = diaryText.value.trim(); if(!text) return; diary.push({id:Date.now(), date, text}); save('diaryEntries', diary); diaryText.value=''; diaryDate.value=''; renderDiary(); });
-
-  diaryList.addEventListener('click', e=>{ if(e.target.matches('button[data-id]')){ const id=+e.target.getAttribute('data-id'); diary = diary.filter(x=>x.id!==id); save('diaryEntries', diary); renderDiary(); } });
-
-  renderDiary();
-  </script>
-</body>
-</html>
-<!doctype html>
-<html lang="de-CH">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KI Assistent Dashboard</title>
-  <meta name="description" content="Persönliches Dashboard für deinen KI Assistenten" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
   <header>
-    <h1 class="welcome">Willkommen zurück, Luca 👋</h1>
-    <p class="subtitle">Übersicht deines persönlichen KI Assistenten</p>
-    <div class="header-actions">
-      <a class="button" href="stats.html">Statistik</a>
-    </div>
+    <h1>AI Dashboard</h1>
+    <nav>
+      <a href="index.html">Startseite</a>
+      <a href="stats.html">Statistik</a>
+    </nav>
   </header>
 
   <main>
-
-    <section class="features-section">
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">📋</div>
-          <div class="feature-name">Aufgabenmanagement</div>
-          <div class="feature-desc">Organisiere und verwalte deine To-Do Listen</div>
-          <button class="button">Verwalten</button>
-        </div>
-      </div>
+    <!-- Aufgaben -->
+    <section class="card">
+      <h2>Aufgaben</h2>
+      <form id="todo-form">
+        <input type="text" id="todo-input" placeholder="Neue Aufgabe hinzufügen..." required>
+        <button type="submit">Speichern</button>
+      </form>
+      <ul id="todo-list"></ul>
     </section>
 
-  <!-- Aufgabenmanagement Sektion -->
-  <section class="tasks-section">
-    <h2 class="section-title">🗂 Aufgabenmanagement</h2>
+    <!-- Abend-Check -->
+    <section class="card">
+      <h2>Abend-Check</h2>
+      <form id="check-form">
+        <label>
+          Stimmung: <span id="mood-val">7</span>/10
+          <input type="range" id="mood" min="0" max="10" value="7">
+        </label>
+        <label>
+          Energie: <span id="energy-val">6</span>/10
+          <input type="range" id="energy" min="0" max="10" value="6">
+        </label>
+        <label>
+          Stress: <span id="stress-val">3</span>/10
+          <input type="range" id="stress" min="0" max="10" value="3">
+        </label>
+        <textarea id="check-note" placeholder="Kurze Notiz..." rows="3"></textarea>
+        <button type="submit">Speichern</button>
+      </form>
+      <div id="last-check" class="info"></div>
+    </section>
 
-    <div class="tasks-controls">
-      <div class="tabs">
-        <button class="tab active" id="tabTodo" onclick="toggleView('todo')">Todo-Liste</button>
-        <button class="tab" id="tabCalendar" onclick="toggleView('calendar')">Kalender / Plan</button>
-      </div>
-
-      <div class="quick-add">
-        <input id="quickTitle" placeholder="Schnell hinzufügen..." />
-        <select id="quickArea"></select>
-        <select id="quickEnergy">
-          <option value="green">🟢 Grün</option>
-          <option value="yellow">🟡 Gelb</option>
-          <option value="red">🔴 Rot</option>
-        </select>
-        <button class="button" onclick="addTodoQuick()">Hinzufügen</button>
-      </div>
-    </div>
-
-    <div class="tasks-main">
-      <div class="todo-view" id="todoView">
-        <div class="todo-side">
-          <div class="filters">
-            <button class="filter active" data-filter="all" onclick="applyFilter('all')">Alle</button>
-            <button class="filter" data-filter="open" onclick="applyFilter('open')">Offen</button>
-            <button class="filter" data-filter="done" onclick="applyFilter('done')">Erledigt</button>
-          </div>
-
-          <div class="areas-list" id="areasList"></div>
-
-          <div class="backlog">
-            <h3>Backlog</h3>
-            <ul id="backlogList" class="backlog-list"></ul>
-          </div>
-        </div>
-
-        <div class="todo-list-wrap">
-          <h3>Aufgaben</h3>
-          <ul id="todoList" class="todo-list"></ul>
-        </div>
-      </div>
-
-      <div class="calendar-view" id="calendarView" style="display:none;">
-        <div class="calendar-left">
-          <h3>Backlog</h3>
-          <ul id="calendarBacklog" class="backlog-list"></ul>
-        </div>
-        <div class="calendar-right">
-          <div class="calendar-controls">
-            <button class="button" onclick="changeWeek(-1)">←</button>
-            <div id="weekLabel" class="week-label"></div>
-            <button class="button" onclick="changeWeek(1)">→</button>
-          </div>
-          <div id="calendarGrid" class="calendar-grid"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Psychische Faktoren -->
-  <section>
-    <h2 class="section-title">🧠 Psychische Faktoren</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="card-title"><span class="card-icon">✅</span>Täglicher Check-In</div>
-        <div class="metric">
-          <span class="metric-label">Tageszeit</span>
-          <span class="metric-value">Abends</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">Letzter Check</span>
-          <span class="metric-value" id="lastCheck">—</span>
-        </div>
-        <button class="button" onclick="openCheckInModal()">Check durchführen</button>
-      </div>
-
-      <div class="card" id="diaryCard">
-        <div class="card-title"><span class="card-icon">📓</span>Tagebuch</div>
-        <div class="metric">
-          <span class="metric-label">Einträge</span>
-          <span class="metric-value" id="diaryCount">0</span>
-        </div>
-        <div class="metric">
-          <div id="recentDiary" class="recent-diary">Keine Einträge</div>
-        </div>
-        <button class="button" onclick="openDiaryModal()">Eintrag hinzufügen</button>
-      </div>
-    </div>
-  </section>
-
+    <!-- Tagebuch -->
+    <section class="card">
+      <h2>Tagebuch</h2>
+      <form id="diary-form">
+        <input type="date" id="diary-date">
+        <textarea id="diary-text" placeholder="Tagebucheintrag..." rows="4"></textarea>
+        <button type="submit">Speichern</button>
+      </form>
+      <ul id="diary-list"></ul>
+    </section>
   </main>
 
   <footer>
-    <small>&copy; <span id="year"></span> Dein persönlicher KI Assistent | Datenschutz & Sicherheit gewährleistet</small>
+    <p>Daten werden im Browser gespeichert.</p>
   </footer>
 
-  
+  <script>
+    // Helper: localStorage
+    const db = {
+      get(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; } },
+      set(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    };
 
-  <!-- Check-In Modal -->
-  <div class="modal" id="checkInModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle">Täglicher Check-In</h2>
-        <div class="modal-progress">
-          <span id="questionCounter">1</span> / 10
-          <div class="progress-bar-modal">
-            <div class="progress-fill-modal" id="modalProgressBar" style="width: 10%"></div>
-          </div>
-        </div>
-      </div>
+    // === TODOS ===
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
 
-      <div id="questionContainer">
-          <!-- Questions werden hier eingefügt -->
-        </div>
-
-      <div class="modal-buttons">
-        <button class="btn-secondary" id="closeBtn" style="display: none;">Abbrechen</button>
-        <button class="btn-secondary" id="prevBtn" style="display: none;">← Zurück</button>
-        <button class="btn-primary-modal" id="nextBtn">Weiter →</button>
-      </div>
-    </div>
-
-    <!-- Diary Modal -->
-    <div class="modal" id="diaryModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Tagebuch Eintrag</h2>
-        </div>
-
-        <div class="diary-form">
-          <label>Datum</label>
-          <input type="date" id="diaryDate" />
-
-          <label>Welche Werte wurden heute gefördert?</label>
-          <input type="text" id="promotedValue" placeholder="Wert (z.B. Nähe)" />
-          <textarea id="promotedNote" placeholder="Beschreibe die Situation"></textarea>
-
-          <label>Welche Werte wurden verletzt?</label>
-          <input type="text" id="violatedValue" placeholder="Wert (z.B. Respekt)" />
-          <textarea id="violatedNote" placeholder="Beschreibe die Situation"></textarea>
-
-          <label>Bist du zufrieden mit deinem Tag?</label>
-          <select id="satisfaction">
-            <option value="yes">Ja</option>
-            <option value="neutral">Neutral</option>
-            <option value="no">Nein</option>
-          </select>
-
-          <label>Freitext</label>
-          <textarea id="diaryNote" placeholder="Weitere Gedanken..."></textarea>
-
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <button class="button" onclick="saveDiaryEntry()">Speichern</button>
-            <button class="btn-secondary" onclick="closeDiaryModal()">Abbrechen</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-    
-    
-    // ========== Check-In Daten ==========
-    const checkInQuestions = [
-      {
-        id: 1,
-        type: 'slider',
-        title: 'Wie ist deine aktuelle Stimmung?',
-        subtitle: 'Von sehr negativ zu sehr positiv',
-        minLabel: 'Sehr negativ',
-        maxLabel: 'Sehr positiv',
-        min: 1,
-        max: 10,
-        value: 5
-      },
-      {
-        id: 2,
-        type: 'multiple-choice',
-        title: 'Wie war dein Schlaf in der letzten Nacht?',
-        subtitle: 'Wie erholsam war die Ruhe?',
-        options: ['Sehr schlecht', 'Schlecht', 'Mittelmäßig', 'Gut', 'Sehr gut']
-      },
-      {
-        id: 3,
-        type: 'slider',
-        title: 'Wie energetisch fühlst du dich?',
-        subtitle: 'Von sehr müde zu sehr energiegeladen',
-        minLabel: 'Sehr müde',
-        maxLabel: 'Sehr energiegeladen',
-        min: 1,
-        max: 10,
-        value: 5
-      },
-      {
-        id: 4,
-        type: 'multiple-choice',
-        title: 'Wie ist dein Stresslevel?',
-        subtitle: 'Wähle dein aktuelles Empfinden',
-        options: ['Völlig entspannt', 'Entspannt', 'Neutral', 'Gestresst', 'Sehr gestresst']
-      },
-      {
-        id: 5,
-        type: 'slider',
-        title: 'Wie konzentriert kannst du dich heute fokussieren?',
-        subtitle: 'Von sehr schwierig zu sehr leicht',
-        minLabel: 'Sehr schwierig',
-        maxLabel: 'Sehr leicht',
-        min: 1,
-        max: 10,
-        value: 5
-      },
-      {
-        id: 6,
-        type: 'multiple-choice',
-        title: 'Wie motiviert bist du heute?',
-        subtitle: 'Bewerte deine Motivation',
-        options: ['Keine Motivation', 'Wenig motiviert', 'Neutral', 'Motiviert', 'Sehr motiviert']
-      },
-      {
-        id: 7,
-        type: 'slider',
-        title: 'Wie zufrieden bist du mit deinen heutigen Fortschritten?',
-        subtitle: 'Von unzufrieden zu sehr zufrieden',
-        minLabel: 'Unzufrieden',
-        maxLabel: 'Sehr zufrieden',
-        min: 1,
-        max: 10,
-        value: 5
-      },
-      {
-        id: 8,
-        type: 'multiple-choice',
-        title: 'Wie ist deine soziale Verbindung heute?',
-        subtitle: 'Wie verbunden fühlst du dich?',
-        options: ['Isoliert', 'Einsam', 'Neutral', 'Verbunden', 'Sehr verbunden']
-      },
-      {
-        id: 9,
-        type: 'slider',
-        title: 'Wie ausgewogen ist dein heutiger Tag?',
-        subtitle: 'Von unausgeglichen zu perfekt ausgewogen',
-        minLabel: 'Unausgeglichen',
-        maxLabel: 'Perfekt',
-        min: 1,
-        max: 10,
-        value: 5
-      },
-      {
-        id: 10,
-        type: 'multiple-choice',
-        title: 'Was brauchst du heute am meisten?',
-        subtitle: 'Wähle das Wichtigste für dich',
-        options: ['Ruhe & Schlaf', 'Bewegung & Sport', 'Soziale Kontakte', 'Kreativität & Spaß', 'Produktivität & Erfolg']
-      }
-    ];
-    
-    let currentQuestion = 0;
-    let answers = {};
-    const modal = document.getElementById('checkInModal');
-    const questionContainer = document.getElementById('questionContainer');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    const questionCounter = document.getElementById('questionCounter');
-    const modalProgressBar = document.getElementById('modalProgressBar');
-    const modalTitle = document.getElementById('modalTitle');
-
-    function renderQuestion(index) {
-      const question = checkInQuestions[index];
-      let html = `
-        <div class="question-text">${question.title}</div>
-        ${question.subtitle ? `<div class="question-subtitle">${question.subtitle}</div>` : ''}
-      `;
-
-      if (question.type === 'multiple-choice') {
-        html += '<div class="options-group">';
-        question.options.forEach((option, i) => {
-          const isSelected = answers[question.id] === i;
-          html += `
-            <button class="option-button ${isSelected ? 'selected' : ''}" 
-                    onclick="selectOption(${question.id}, ${i}, '${option}')">
-              ${option}
-            </button>
-          `;
-        });
-        html += '</div>';
-      } else if (question.type === 'slider') {
-        const currentValue = answers[question.id] !== undefined ? answers[question.id] : question.value;
-        html += `
-          <div class="slider-container">
-            <div class="slider-labels">
-              <span>${question.minLabel}</span>
-              <span>${question.maxLabel}</span>
-            </div>
-            <input type="range" min="${question.min}" max="${question.max}" value="${currentValue}" 
-                   class="slider-input" onchange="updateSliderValue(${question.id}, this.value)" 
-                   oninput="updateSliderDisplay(this.value)">
-            <div class="slider-value" id="sliderDisplay">${currentValue}</div>
-          </div>
+    function renderTodos() {
+      const todos = db.get('todos');
+      todoList.innerHTML = '';
+      todos.forEach((todo, idx) => {
+        const li = document.createElement('li');
+        li.className = todo.done ? 'done' : '';
+        li.innerHTML = `
+          <label>
+            <input type="checkbox" ${todo.done ? 'checked' : ''} data-idx="${idx}">
+            ${todo.text}
+          </label>
+          <button class="del-btn" data-idx="${idx}">✕</button>
         `;
-      }
-
-      questionContainer.innerHTML = html;
-      
-      // Update progress
-      questionCounter.textContent = index + 1;
-      const progress = ((index + 1) / checkInQuestions.length) * 100;
-      modalProgressBar.style.width = progress + '%';
-
-      // Update buttons
-      prevBtn.style.display = index > 0 ? 'block' : 'none';
-      nextBtn.textContent = index === checkInQuestions.length - 1 ? '✓ Abschließen' : 'Weiter →';
-    }
-
-    function selectOption(questionId, optionIndex, optionText) {
-      answers[questionId] = optionIndex;
-      document.querySelectorAll('.option-button').forEach(btn => {
-        btn.classList.remove('selected');
+        todoList.appendChild(li);
       });
-      event.target.classList.add('selected');
     }
 
-    function updateSliderValue(questionId, value) {
-      answers[questionId] = parseInt(value);
-    }
+    todoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = todoInput.value.trim();
+      if (!text) return;
+      const todos = db.get('todos');
+      todos.push({ text, done: false });
+      db.set('todos', todos);
+      todoInput.value = '';
+      renderTodos();
+    });
 
-    function updateSliderDisplay(value) {
-      document.getElementById('sliderDisplay').textContent = value;
-    }
-
-    function saveDailyCheckEntry() {
-      try {
-        const stored = JSON.parse(localStorage.getItem('dailyChecks') || '[]');
-        const entry = { id: generateId('check_'), date: new Date().toISOString(), answers };
-        stored.push(entry);
-        localStorage.setItem('dailyChecks', JSON.stringify(stored));
-      } catch (e) {
-        console.error('Fehler beim Speichern des Daily Check', e);
-      }
-    }
-
-    function showSummary() {
-      // save the check always when summary is shown
-      saveDailyCheckEntry();
-      const avgMood = answers[1];
-      const sleep = answers[2];
-      const energy = answers[3];
-      const stress = answers[4];
-      const need = checkInQuestions[9].options[answers[10]];
-
-      let summary = `
-        <div class="summary-content">
-          <div class="summary-title">✓ Check-In abgeschlossen!</div>
-          <div class="summary-text">
-            Danke, dass du dir Zeit für Selbstreflektion genommen hast. Hier ist eine kurze Zusammenfassung deines heutigen Zustands.
-          </div>
-          <div class="summary-stats">
-            <div class="stat-item">
-              <span class="stat-label">Durchschnittliche Stimmung</span>
-              <span class="stat-value">${avgMood}/10</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Energielevel</span>
-              <span class="stat-value">${energy}/10</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Stresslevel</span>
-              <span class="stat-value">${['Entspannt', 'Entspannt', 'Neutral', 'Gestresst', 'Sehr gestresst'][stress]}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Du brauchst</span>
-              <span class="stat-value">${need}</span>
-            </div>
-          </div>
-          <p class="summary-text">
-            Versuche heute, dich auf das zu konzentrieren, was du am meisten brauchst. Der Assistent wird dir dabei helfen! 💪
-          </p>
-        </div>
-      `;
-
-      questionContainer.innerHTML = summary;
-      prevBtn.style.display = 'none';
-      nextBtn.textContent = 'Fertig';
-      nextBtn.onclick = () => closeModal();
-    }
-
-    function openCheckInModal() {
-      currentQuestion = 0;
-      answers = {};
-      modal.classList.add('active');
-      renderQuestion(0);
-    }
-
-    // ensure daily checks are always made in the evening: show reminder text in modal header
-    (function setCheckHeaderForEvening(){
-      const modalTitleEl = document.getElementById('modalTitle');
-      if (modalTitleEl) modalTitleEl.textContent = 'Täglicher Check-In (Abends)';
-    })();
-
-    function closeModal() {
-      modal.classList.remove('active');
-    }
-
-    nextBtn.addEventListener('click', () => {
-      if (currentQuestion < checkInQuestions.length - 1) {
-        currentQuestion++;
-        renderQuestion(currentQuestion);
-      } else if (Object.keys(answers).length < checkInQuestions.length) {
-        alert('Bitte beantworte alle Fragen vor dem Fortfahren');
-      } else {
-        showSummary();
+    todoList.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"]')) {
+        const idx = +e.target.dataset.idx;
+        const todos = db.get('todos');
+        todos[idx].done = e.target.checked;
+        db.set('todos', todos);
+        renderTodos();
       }
     });
 
-    prevBtn.addEventListener('click', () => {
-      if (currentQuestion > 0) {
-        currentQuestion--;
-        renderQuestion(currentQuestion);
+    todoList.addEventListener('click', (e) => {
+      if (e.target.classList.contains('del-btn')) {
+        const idx = +e.target.dataset.idx;
+        const todos = db.get('todos');
+        todos.splice(idx, 1);
+        db.set('todos', todos);
+        renderTodos();
       }
     });
 
-    closeBtn.addEventListener('click', closeModal);
+    renderTodos();
 
-    // Verbinde den Check-In Button mit dem Modal
-    document.querySelectorAll('.button').forEach(btn => {
-      if (btn.parentElement.querySelector('.card-title')?.textContent.includes('Täglicher Check-In')) {
-        btn.onclick = (e) => {
-          e.preventDefault();
-          openCheckInModal();
-        };
-      }
-    });
+    // === CHECK-IN ===
+    const checkForm = document.getElementById('check-form');
+    const moodInput = document.getElementById('mood');
+    const energyInput = document.getElementById('energy');
+    const stressInput = document.getElementById('stress');
+    const lastCheckDiv = document.getElementById('last-check');
 
-    // ========== Aufgabenmanagement (Todo & Kalender) ==========
-    let areas = [];
-    let todos = [];
-    let blocks = [];
-    let currentFilter = 'all';
-    let currentWeekOffset = 0;
+    moodInput.addEventListener('input', () => document.getElementById('mood-val').textContent = moodInput.value);
+    energyInput.addEventListener('input', () => document.getElementById('energy-val').textContent = energyInput.value);
+    stressInput.addEventListener('input', () => document.getElementById('stress-val').textContent = stressInput.value);
 
-    function generateId(prefix = '') {
-      return prefix + Math.random().toString(36).slice(2, 9);
-    }
-
-    function saveData() {
-      localStorage.setItem('areas', JSON.stringify(areas));
-      localStorage.setItem('todos', JSON.stringify(todos));
-      localStorage.setItem('blocks', JSON.stringify(blocks));
-    }
-
-    function loadData() {
-      areas = JSON.parse(localStorage.getItem('areas') || 'null') || [];
-      todos = JSON.parse(localStorage.getItem('todos') || 'null') || [];
-      blocks = JSON.parse(localStorage.getItem('blocks') || 'null') || [];
-    }
-
-    function initDefaultAreas() {
-      if (areas.length === 0) {
-        areas.push({id: generateId('area_'), name: 'Inbox', color: '#64748b', icon: '📥'});
-        areas.push({id: generateId('area_'), name: 'Arbeit', color: '#6366f1', icon: '💼'});
-        areas.push({id: generateId('area_'), name: 'Privat', color: '#10b981', icon: '🏠'});
-        saveData();
-      }
-    }
-
-    function initTasks() {
-      loadData();
-      initDefaultAreas();
-      renderAreasList();
-      renderBacklog();
-      renderTodoList();
-      renderCalendar();
-    }
-
-    function renderAreasList() {
-      const el = document.getElementById('areasList');
-      const sel = document.getElementById('quickArea');
-      el.innerHTML = '';
-      sel.innerHTML = '';
-      areas.forEach(a => {
-        const d = document.createElement('div');
-        d.className = 'area-item';
-        d.innerHTML = `<span class="area-icon">${a.icon || '🔹'}</span><span class="area-name">${a.name}</span>`;
-        el.appendChild(d);
-
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.name;
-        sel.appendChild(opt);
-      });
-    }
-
-    function addTodoQuick() {
-      const title = document.getElementById('quickTitle').value.trim();
-      const area = document.getElementById('quickArea').value;
-      const energy = document.getElementById('quickEnergy').value;
-      if (!title) return alert('Bitte Titel eingeben');
-      const todo = {id: generateId('t_'), title, areaId: area, status: 'open', energy, note: '', duration: null, deadline: null};
-      todos.unshift(todo);
-      saveData();
-      document.getElementById('quickTitle').value = '';
-      renderBacklog();
-      renderTodoList();
-      renderCalendarBacklog();
-    }
-
-    function renderBacklog() {
-      const list = document.getElementById('backlogList');
-      list.innerHTML = '';
-      todos.filter(t => t.status === 'open').forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'backlog-item';
-        li.draggable = true;
-        li.dataset.id = t.id;
-        li.innerHTML = `<input type="checkbox" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTodoStatus('${t.id}', this.checked)" />
-                        <span class="backlog-title">${t.title}</span>
-                        <span class="energy ${t.energy}"></span>`;
-        li.addEventListener('dragstart', (ev) => {
-          ev.dataTransfer.setData('text/plain', t.id);
-        });
-        list.appendChild(li);
-      });
-      renderCalendarBacklog();
-    }
-
-    function renderCalendarBacklog() {
-      const list = document.getElementById('calendarBacklog');
-      if (!list) return;
-      list.innerHTML = '';
-      todos.filter(t => t.status === 'open').forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'backlog-item';
-        li.draggable = true;
-        li.dataset.id = t.id;
-        li.textContent = t.title + ' ';
-        const badge = document.createElement('span'); badge.className = 'energy ' + t.energy; li.appendChild(badge);
-        li.addEventListener('dragstart', (ev) => ev.dataTransfer.setData('text/plain', t.id));
-        list.appendChild(li);
-      });
-    }
-
-    function renderTodoList() {
-      const el = document.getElementById('todoList');
-      el.innerHTML = '';
-      let items = todos.slice();
-      if (currentFilter === 'open') items = items.filter(t => t.status === 'open');
-      if (currentFilter === 'done') items = items.filter(t => t.status === 'done');
-      items.forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'todo-item';
-        li.innerHTML = `<label><input type="checkbox" ${t.status==='done'?'checked':''} onchange="toggleTodoStatus('${t.id}', this.checked)"/> <span>${t.title}</span></label>
-                        <div class="todo-meta"><span class="energy ${t.energy}"></span></div>`;
-        el.appendChild(li);
-      });
-    }
-
-    function toggleTodoStatus(id, checked) {
-      const t = todos.find(x => x.id === id);
-      if (!t) return;
-      t.status = checked ? 'done' : 'open';
-      saveData();
-      renderBacklog();
-      renderTodoList();
-      renderCalendarBacklog();
-    }
-
-    function applyFilter(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('.filter').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
-      renderTodoList();
-    }
-
-    function toggleView(view) {
-      document.getElementById('todoView').style.display = view === 'todo' ? 'flex' : 'none';
-      document.getElementById('calendarView').style.display = view === 'calendar' ? 'flex' : 'none';
-      document.getElementById('tabTodo').classList.toggle('active', view === 'todo');
-      document.getElementById('tabCalendar').classList.toggle('active', view === 'calendar');
-      if (view === 'calendar') renderCalendar();
-    }
-
-    // Calendar rendering (simple week view)
-    function startOfWeek(date) {
-      const d = new Date(date);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday as first day
-      return new Date(d.setDate(diff));
-    }
-
-    function changeWeek(delta) {
-      currentWeekOffset += delta;
-      renderCalendar();
-    }
-
-    function renderCalendar() {
-      const grid = document.getElementById('calendarGrid');
-      grid.innerHTML = '';
-      const now = new Date();
-      const offsetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + currentWeekOffset * 7);
-      const weekStart = startOfWeek(offsetDate);
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + i);
-        days.push(d);
-      }
-      document.getElementById('weekLabel').textContent = days[0].toLocaleDateString() + ' - ' + days[6].toLocaleDateString();
-
-      days.forEach(day => {
-        const col = document.createElement('div');
-        col.className = 'calendar-day';
-        col.dataset.date = day.toISOString().slice(0,10);
-        col.innerHTML = `<div class="calendar-day-header">${day.toLocaleDateString(undefined,{weekday:'short', day:'numeric'})}</div><div class="calendar-day-body"></div>`;
-        const body = col.querySelector('.calendar-day-body');
-        body.addEventListener('dragover', (e) => e.preventDefault());
-        body.addEventListener('drop', (e) => {
-          e.preventDefault();
-          const todoId = e.dataTransfer.getData('text/plain');
-          if (!todoId) return;
-          const block = {id: generateId('b_'), todoId, date: col.dataset.date, start: '09:00', duration: 60};
-          blocks.push(block);
-          saveData();
-          renderCalendar();
-        });
-
-        // render blocks for this day
-        blocks.filter(b => b.date === col.dataset.date).forEach(b => {
-          const t = todos.find(x => x.id === b.todoId) || {title: 'gelöschte Aufgabe', energy: 'green'};
-          const bl = document.createElement('div');
-          bl.className = 'calendar-block';
-          const color = t.energy === 'green' ? '#10b981' : t.energy === 'yellow' ? '#f59e0b' : '#ef4444';
-          bl.style.background = color;
-          bl.textContent = t.title + ' (' + Math.floor(b.duration/60) + 'h)';
-          bl.onclick = () => editBlock(b.id);
-          body.appendChild(bl);
-        });
-
-        grid.appendChild(col);
-      });
-      renderCalendarBacklog();
-    }
-
-    function editBlock(blockId) {
-      const b = blocks.find(x => x.id === blockId);
-      if (!b) return;
-      const newDur = prompt('Dauer in Minuten (aktuell ' + b.duration + ')', b.duration);
-      if (newDur === null) return;
-      if (newDur === '') return;
-      b.duration = parseInt(newDur) || b.duration;
-      saveData();
-      renderCalendar();
-    }
-
-    // Tagebuch: load/save/render functions
-    function loadDiary() {
-      try { return JSON.parse(localStorage.getItem('diaryEntries') || '[]'); } catch (e) { return []; }
-    }
-
-    function saveDiary(entries) {
-      localStorage.setItem('diaryEntries', JSON.stringify(entries));
-    }
-
-    function openDiaryModal() {
-      document.getElementById('diaryModal').classList.add('active');
-      const today = new Date().toISOString().slice(0,10);
-      document.getElementById('diaryDate').value = today;
-      document.getElementById('promotedValue').value = '';
-      document.getElementById('promotedNote').value = '';
-      document.getElementById('violatedValue').value = '';
-      document.getElementById('violatedNote').value = '';
-      document.getElementById('satisfaction').value = 'neutral';
-      document.getElementById('diaryNote').value = '';
-    }
-
-    function closeDiaryModal() {
-      document.getElementById('diaryModal').classList.remove('active');
-    }
-
-    function saveDiaryEntry() {
-      const date = document.getElementById('diaryDate').value || new Date().toISOString().slice(0,10);
-      const promotedValue = document.getElementById('promotedValue').value.trim();
-      const promotedNote = document.getElementById('promotedNote').value.trim();
-      const violatedValue = document.getElementById('violatedValue').value.trim();
-      const violatedNote = document.getElementById('violatedNote').value.trim();
-      const satisfaction = document.getElementById('satisfaction').value;
-      const note = document.getElementById('diaryNote').value.trim();
-
-      const entries = loadDiary();
-      const entry = {
-        id: generateId('d_'), date: new Date(date).toISOString(),
-        promoted: { value: promotedValue, note: promotedNote },
-        violated: { value: violatedValue, note: violatedNote },
-        satisfaction, note
-      };
-      entries.push(entry);
-      saveDiary(entries);
-      closeDiaryModal();
-      renderDiaryList();
-      updateLastCheck();
-    }
-
-    function renderDiaryList() {
-      const entries = loadDiary();
-      document.getElementById('diaryCount').textContent = entries.length;
-      const recent = document.getElementById('recentDiary');
-      if (!recent) return;
-      if (entries.length === 0) {
-        recent.textContent = 'Keine Einträge';
+    function showLastCheck() {
+      const checks = db.get('dailyChecks');
+      if (!checks.length) {
+        lastCheckDiv.textContent = 'Noch keine Einträge.';
         return;
       }
-      const last = entries[entries.length-1];
-      const d = new Date(last.date);
-      recent.innerHTML = `<strong>${d.toLocaleDateString()}</strong><div style="font-size:0.9rem;margin-top:6px;">${last.promoted.value || '—'} | ${last.violated.value || '—'} | ${last.satisfaction}</div>`;
+      const last = checks[checks.length - 1];
+      lastCheckDiv.innerHTML = `<strong>Letzter Eintrag:</strong> ${last.date} — Stimmung ${last.mood}, Energie ${last.energy}, Stress ${last.stress}`;
     }
 
-    function updateLastCheck() {
-      try {
-        const checks = JSON.parse(localStorage.getItem('dailyChecks') || '[]');
-        const last = checks.length ? checks[checks.length-1] : null;
-        document.getElementById('lastCheck').textContent = last ? new Date(last.date).toLocaleString() : '—';
-      } catch (e) { document.getElementById('lastCheck').textContent = '—'; }
+    checkForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const checks = db.get('dailyChecks');
+      checks.push({
+        date: new Date().toISOString().slice(0, 10),
+        mood: moodInput.value,
+        energy: energyInput.value,
+        stress: stressInput.value,
+        note: document.getElementById('check-note').value
+      });
+      db.set('dailyChecks', checks);
+      document.getElementById('check-note').value = '';
+      showLastCheck();
+    });
+
+    showLastCheck();
+
+    // === DIARY ===
+    const diaryForm = document.getElementById('diary-form');
+    const diaryDate = document.getElementById('diary-date');
+    const diaryText = document.getElementById('diary-text');
+    const diaryList = document.getElementById('diary-list');
+
+    // Set today as default
+    diaryDate.valueAsDate = new Date();
+
+    function renderDiary() {
+      const entries = db.get('diaryEntries');
+      diaryList.innerHTML = '';
+      entries.slice().reverse().forEach((entry, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div>
+            <strong>${entry.date}</strong><br>
+            ${entry.text}
+          </div>
+          <button class="del-btn" data-date="${entry.date}">✕</button>
+        `;
+        diaryList.appendChild(li);
+      });
     }
 
-    // initialisieren
-    initTasks();
-    renderDiaryList();
-    updateLastCheck();
+    diaryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = diaryDate.value;
+      const text = diaryText.value.trim();
+      if (!text) return;
+      const entries = db.get('diaryEntries');
+      entries.push({ date, text });
+      db.set('diaryEntries', entries);
+      diaryText.value = '';
+      diaryDate.valueAsDate = new Date();
+      renderDiary();
+    });
 
+    diaryList.addEventListener('click', (e) => {
+      if (e.target.classList.contains('del-btn')) {
+        const date = e.target.dataset.date;
+        let entries = db.get('diaryEntries');
+        entries = entries.filter(e => e.date !== date);
+        db.set('diaryEntries', entries);
+        renderDiary();
+      }
+    });
+
+    renderDiary();
   </script>
 </body>
 </html>
-``
